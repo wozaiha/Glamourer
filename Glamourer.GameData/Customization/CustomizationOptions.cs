@@ -263,11 +263,12 @@ namespace Glamourer.Customization
         private static Language FromClientLanguage(ClientLanguage language)
             => language switch
             {
-                ClientLanguage.English  => Language.English,
-                ClientLanguage.French   => Language.French,
-                ClientLanguage.German   => Language.German,
-                ClientLanguage.Japanese => Language.Japanese,
-                _                       => Language.English,
+                ClientLanguage.English           => Language.English,
+                ClientLanguage.French            => Language.French,
+                ClientLanguage.German            => Language.German,
+                ClientLanguage.Japanese          => Language.Japanese,
+                ClientLanguage.ChineseSimplified => Language.ChineseSimplified,
+                _                                => Language.English,
             };
 
         internal CustomizationOptions(DalamudPluginInterface pi)
