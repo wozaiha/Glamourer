@@ -222,8 +222,8 @@ namespace Glamourer
                 => p.Definition.InternalName == "Penumbra"
              && string.Compare(p.Definition.AssemblyVersion, "0.4.0.3", StringComparison.Ordinal) >= 0).Plugin;
 
-            var penumbra = (IPenumbraApiBase?) plugin?.GetType().GetProperty("Api", BindingFlags.Instance | BindingFlags.Public)
-                ?.GetValue(plugin);
+            var penumbra = plugin?.GetType().GetProperty("Api", BindingFlags.Instance | BindingFlags.Public)
+                ?.GetValue(plugin) as IPenumbraApiBase;
             if (penumbra != null && penumbra.Valid && penumbra.ApiVersion >= RequiredPenumbraShareVersion)
             {
                 Penumbra = (IPenumbraApi) penumbra!;
