@@ -1,28 +1,61 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using Dalamud.Game.ClientState.Objects.Types;
 using Penumbra.GameData.Enums;
 
 namespace Glamourer.Customization
 {
     public unsafe struct LazyCustomization
     {
-        public ActorCustomization* Address;
+        public CharacterCustomization* Address;
 
-        public LazyCustomization(IntPtr actorPtr)
-            => Address = (ActorCustomization*) (actorPtr + ActorCustomization.CustomizationOffset);
+        public LazyCustomization(IntPtr characterPtr)
+            => Address = (CharacterCustomization*) (characterPtr + CharacterCustomization.CustomizationOffset);
 
-        public ref ActorCustomization Value
+        public ref CharacterCustomization Value
             => ref *Address;
+
+        public LazyCustomization(CharacterCustomization data)
+            => Address = &data;
     }
 
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    public struct ActorCustomization
+    public struct CharacterCustomization
     {
         public const int CustomizationOffset = 0x1898;
         public const int CustomizationBytes  = 26;
 
-        private byte    _race;
+        public static CharacterCustomization Default = new()
+        {
+            Race            = Race.Hyur,
+            Gender          = Gender.Male,
+            BodyType        = 1,
+            Height          = 50,
+            Clan            = SubRace.Midlander,
+            Face            = 1,
+            Hairstyle       = 1,
+            HighlightsOn    = false,
+            SkinColor       = 1,
+            EyeColorRight   = 1,
+            HighlightsColor = 1,
+            FacialFeatures  = 0,
+            TattooColor     = 1,
+            Eyebrow         = 1,
+            EyeColorLeft    = 1,
+            EyeShape        = 1,
+            Nose            = 1,
+            Jaw             = 1,
+            Mouth           = 1,
+            LipColor        = 1,
+            MuscleMass      = 50,
+            TailShape       = 1,
+            BustSize        = 50,
+            FacePaint       = 1,
+            FacePaintColor  = 1,
+        };
+
+        public  Race    Race;
         private byte    _gender;
         public  byte    BodyType;
         public  byte    Height;
@@ -48,12 +81,6 @@ namespace Glamourer.Customization
         public  byte    BustSize;
         private byte    _facePaint;
         public  byte    FacePaintColor;
-
-        public Race Race
-        {
-            get => (Race) (_race > (byte) Race.Midlander ? _race + 1 : _race);
-            set => _race = (byte) (value > Race.Highlander ? value - 1 : value);
-        }
 
         public Gender Gender
         {
@@ -117,10 +144,19 @@ namespace Glamourer.Customization
 
         public unsafe void Read(IntPtr customizeAddress)
         {
-            fixed (byte* ptr = &_race)
+            fixed (Race* ptr = &Race)
             {
                 Buffer.MemoryCopy(customizeAddress.ToPointer(), ptr, CustomizationBytes, CustomizationBytes);
             }
+        }
+
+        public void Read(Character character)
+            => Read(character.Address + CustomizationOffset);
+
+        public CharacterCustomization(Character character)
+            : this()
+        {
+            Read(character.Address + CustomizationOffset);
         }
 
         public byte this[CustomizationId id]
@@ -242,17 +278,17 @@ namespace Glamourer.Customization
             }
         }
 
-        public unsafe void Write(IntPtr actorAddress)
+        public unsafe void Write(IntPtr characterAddress)
         {
-            fixed (byte* ptr = &_race)
+            fixed (Race* ptr = &Race)
             {
-                Buffer.MemoryCopy(ptr, (byte*) actorAddress + CustomizationOffset, CustomizationBytes, CustomizationBytes);
+                Buffer.MemoryCopy(ptr, (byte*) characterAddress + CustomizationOffset, CustomizationBytes, CustomizationBytes);
             }
         }
 
         public unsafe void WriteBytes(byte[] array, int offset = 0)
         {
-            fixed (byte* ptr = &_race)
+            fixed (Race* ptr = &Race)
             {
                 Marshal.Copy(new IntPtr(ptr), array, offset, CustomizationBytes);
             }

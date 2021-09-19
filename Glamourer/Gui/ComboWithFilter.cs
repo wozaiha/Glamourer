@@ -20,12 +20,12 @@ namespace Glamourer.Gui
         private readonly IReadOnlyList<string> _itemNamesLower;
         private readonly Func<T, string>       _itemToName;
 
-        public Action?        PrePreview       = null;
-        public Action?        PostPreview      = null;
-        public Func<T, bool>? CreateSelectable = null;
-        public Action?        PreList          = null;
-        public Action?        PostList         = null;
-        public float?         HeightPerItem    = null;
+        public Action?        PrePreview;
+        public Action?        PostPreview;
+        public Func<T, bool>? CreateSelectable;
+        public Action?        PreList;
+        public Action?        PostList;
+        public float?         HeightPerItem;
 
         private float _heightPerItem;
 
@@ -69,7 +69,10 @@ namespace Glamourer.Gui
             numItems = ItemsAtOnce;
             nodeIdx  = -1;
             if (!ImGui.BeginChild(_listLabel, new Vector2(_size, ItemsAtOnce * _heightPerItem)))
+            {
+                ImGui.EndChild();
                 return false;
+            }
 
             var ret = false;
             try
@@ -99,7 +102,7 @@ namespace Glamourer.Gui
                     {
                         nodeIdx = i;
                         var item    = _items[i]!;
-                        var success = false;
+                        bool success;
                         if (CreateSelectable != null)
                         {
                             success = CreateSelectable(item);
@@ -151,7 +154,7 @@ namespace Glamourer.Gui
 
             _heightPerItem = HeightPerItem ?? ImGui.GetTextLineHeightWithSpacing();
 
-            var ret = false;
+            bool ret;
             try
             {
                 ImGui.SetNextItemWidth(-1);
