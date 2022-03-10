@@ -11,6 +11,8 @@ using Glamourer.Customization;
 using Glamourer.Designs;
 using Glamourer.FileSystem;
 using ImGuiNET;
+using Penumbra.GameData.Structs;
+using Penumbra.PlayerWatch;
 
 namespace Glamourer.Gui
 {
@@ -22,7 +24,6 @@ namespace Glamourer.Gui
         private const    string          DesignNamePopupLabel = "Save Design As...";
         private const    uint            RedHeaderColor       = 0xFF1818C0;
         private const    uint            GreenHeaderColor     = 0xFF18C018;
-        private readonly ConstructorInfo _characterConstructor;
 
         private void DrawPlayerHeader()
         {
@@ -47,24 +48,56 @@ namespace Glamourer.Gui
             ImGuiCustom.HoverTooltip("Copy customization code to clipboard.");
         }
 
+        private static void ConditionalApply(CharacterSave save, Character player)
+        {
+            if (ImGui.GetIO().KeyShift)
+                save.ApplyOnlyCustomizations(player);
+            else if (ImGui.GetIO().KeyCtrl)
+                save.ApplyOnlyEquipment(player);
+            else
+                save.Apply(player);
+        }
+
+        private CharacterSave ConditionalCopy(CharacterSave save)
+        {
+            var copy = save.Copy();
+            if (ImGui.GetIO().KeyShift)
+            {
+                copy.Load(new CharacterEquipment());
+                copy.SetHatState    = false;
+                copy.SetVisorState  = false;
+                copy.SetWeaponState = false;
+                copy.WriteEquipment = CharacterEquipMask.None;
+            }
+            else if (ImGui.GetIO().KeyCtrl)
+            {
+                copy.Load(CharacterCustomization.Default);
+                copy.SetHatState         = false;
+                copy.SetVisorState       = false;
+                copy.SetWeaponState      = false;
+                copy.WriteCustomizations = false;
+            }
+                
+            return save.Copy();
+        }
+
         private bool DrawApplyClipboardButton()
         {
             ImGui.PushFont(UiBuilder.IconFont);
             var applyButton = ImGui.Button(FontAwesomeIcon.Paste.ToIconString()) && _player != null;
             ImGui.PopFont();
-            ImGuiCustom.HoverTooltip("Apply customization code from clipboard.");
+            ImGuiCustom.HoverTooltip("Apply customization code from clipboard.\nHold Shift to apply only customizations.\nHold Control to apply only equipment.");
 
             if (!applyButton)
                 return false;
 
-            var text = ImGui.GetClipboardText();
-            if (!text.Any())
-                return false;
-
             try
             {
+                var text = ImGui.GetClipboardText();
+                if (!text.Any())
+                    return false;
                 var save = CharacterSave.FromString(text);
-                save.Apply(_player!);
+                ConditionalApply(save, _player!);
             }
             catch (Exception e)
             {
@@ -82,7 +115,7 @@ namespace Glamourer.Gui
                 OpenDesignNamePopup(DesignNameUse.SaveCurrent);
 
             ImGui.PopFont();
-            ImGuiCustom.HoverTooltip("Save the current design.");
+            ImGuiCustom.HoverTooltip("Save the current design.\nHold Shift to save only customizations.\nHold Control to save only equipment.");
 
             DrawDesignNamePopup(DesignNameUse.SaveCurrent);
         }
@@ -105,55 +138,22 @@ namespace Glamourer.Gui
             if (player == null)
                 return;
 
-            save.Apply(player);
+            ConditionalApply(save, player);
             if (_inGPose)
-                save.Apply(fallback!);
+                ConditionalApply(save, fallback!);
             Glamourer.Penumbra.UpdateCharacters(player, fallback);
         }
 
-        private const int ModelTypeOffset = 0x01B4;
-
-        private static unsafe int ModelType(GameObject actor)
-            => *(int*) (actor.Address + ModelTypeOffset);
-
-        private static unsafe void SetModelType(GameObject actor, int value)
-            => *(int*) (actor.Address + ModelTypeOffset) = value;
-
-        private Character Character(IntPtr address)
-            => (Character) _characterConstructor.Invoke(new object[]
-            {
-                address,
-            });
-
-        private Character? CreateCharacter(GameObject? actor)
-        {
-            if (actor == null)
-                return null;
-
-            return actor switch
-            {
-                PlayerCharacter p => p,
-                BattleChara b     => b,
-                _ => actor.ObjectKind switch
-                {
-                    ObjectKind.BattleNpc => Character(actor.Address),
-                    ObjectKind.Companion => Character(actor.Address),
-                    ObjectKind.EventNpc  => Character(actor.Address),
-                    _                    => null,
-                },
-            };
-        }
-
-
+        
         private static Character? TransformToCustomizable(Character? actor)
         {
             if (actor == null)
                 return null;
 
-            if (ModelType(actor) == 0)
+            if (actor.ModelType() == 0)
                 return actor;
 
-            SetModelType(actor, 0);
+            actor.SetModelType(0);
             CharacterCustomization.Default.Write(actor.Address);
             return actor;
         }
@@ -163,14 +163,14 @@ namespace Glamourer.Gui
             if (!ImGui.Button("Apply to Target"))
                 return;
 
-            var player = TransformToCustomizable(CreateCharacter(Dalamud.Targets.Target));
+            var player = TransformToCustomizable(CharacterFactory.Convert(Dalamud.Targets.Target));
             if (player == null)
                 return;
 
             var fallBackCharacter = _gPoseActors.TryGetValue(player.Name.ToString(), out var f) ? f : null;
-            save.Apply(player);
+            ConditionalApply(save, player);
             if (fallBackCharacter != null)
-                save.Apply(fallBackCharacter);
+                ConditionalApply(save, fallBackCharacter!);
             Glamourer.Penumbra.UpdateCharacters(player, fallBackCharacter);
         }
 
@@ -224,7 +224,7 @@ namespace Glamourer.Gui
                 DrawTargetPlayerButton();
             }
 
-            var       currentModel = ModelType(_player!);
+            var       currentModel = _player!.ModelType();
             using var raii         = new ImGuiRaii();
             if (!raii.Begin(() => ImGui.BeginCombo("Model Id", currentModel.ToString()), ImGui.EndCombo))
                 return;
@@ -234,7 +234,7 @@ namespace Glamourer.Gui
                 if (!ImGui.Selectable($"{id:D6}##models", id == currentModel) || id == currentModel)
                     continue;
 
-                SetModelType(_player!, (int) id);
+                _player!.SetModelType((int) id);
                 Glamourer.Penumbra.UpdateCharacters(_player!);
             }
         }
@@ -243,7 +243,7 @@ namespace Glamourer.Gui
         {
             DrawCopyClipboardButton(_currentSave);
             ImGui.SameLine();
-            var changes = DrawApplyClipboardButton();
+            var changes = !_currentSave.WriteProtected && DrawApplyClipboardButton();
             ImGui.SameLine();
             DrawSaveDesignButton();
             ImGui.SameLine();
@@ -252,28 +252,39 @@ namespace Glamourer.Gui
             {
                 ImGui.SameLine();
                 DrawApplyToTargetButton(_currentSave);
-                if (_player != null)
+                if (_player != null && !_currentSave.WriteProtected)
                 {
                     ImGui.SameLine();
                     DrawTargetPlayerButton();
                 }
             }
 
-            ImGui.SameLine();
-            DrawRevertButton();
+            var data = _currentSave;
+            if (!_currentSave.WriteProtected)
+            {
+                ImGui.SameLine();
+                DrawRevertButton();
+            }
+            else
+            {
+                ImGui.PushStyleVar(ImGuiStyleVar.Alpha, 0.8f);
+                data = data.Copy();
+            }
 
-            if (DrawCustomization(ref _currentSave.Customizations) && _player != null)
+            if (DrawCustomization(ref data.Customizations) && _player != null)
             {
                 Glamourer.RevertableDesigns.Add(_player);
                 _currentSave.Customizations.Write(_player.Address);
                 changes = true;
             }
 
-            changes |= DrawEquip(_currentSave.Equipment);
-            changes |= DrawMiscellaneous(_currentSave, _player);
+            changes |= DrawEquip(data.Equipment);
+            changes |= DrawMiscellaneous(data, _player);
 
             if (_player != null && changes)
                 Glamourer.Penumbra.UpdateCharacters(_player);
+            if (_currentSave.WriteProtected)
+                ImGui.PopStyleVar();
         }
 
         private void DrawActorPanel()
@@ -286,7 +297,7 @@ namespace Glamourer.Gui
                 return;
             }
 
-            if (_player == null || ModelType(_player) == 0)
+            if (_player == null || _player.ModelType() == 0)
                 DrawPlayerPanel();
             else
                 DrawMonsterPanel();

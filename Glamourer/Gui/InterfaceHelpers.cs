@@ -63,12 +63,8 @@ namespace Glamourer.Gui
             customization.Race = race;
             customization.Clan = clan;
 
-            customization.Gender = race switch
-            {
-                Race.Hrothgar => Gender.Male,
-                Race.Viera    => Gender.Female,
-                _             => customization.Gender,
-            };
+            if (race == Race.Hrothgar)
+                customization.Gender = Gender.Male;
 
             FixUpAttributes(ref customization);
 
@@ -152,7 +148,7 @@ namespace Glamourer.Gui
                     switch (use)
                     {
                         case DesignNameUse.SaveCurrent:
-                            SaveNewDesign(_currentSave.Copy());
+                            SaveNewDesign(ConditionalCopy(_currentSave));
                             break;
                         case DesignNameUse.NewDesign:
                             var empty = new CharacterSave();
@@ -161,7 +157,7 @@ namespace Glamourer.Gui
                             SaveNewDesign(empty);
                             break;
                         case DesignNameUse.DuplicateDesign:
-                            SaveNewDesign(_selection!.Data.Copy());
+                            SaveNewDesign(ConditionalCopy(_selection!.Data));
                             break;
                         case DesignNameUse.NewFolder:
                             _designs.FileSystem

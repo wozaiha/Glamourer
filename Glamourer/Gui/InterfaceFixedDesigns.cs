@@ -61,8 +61,9 @@ namespace Glamourer.Gui
                 raii.PushFont(UiBuilder.IconFont);
                 if (ImGui.Button($"{FontAwesomeIcon.Trash.ToIconChar()}##{i}"))
                 {
-                    _fullPathCache.RemoveAt(i);
+                    _fullPathCache.RemoveAt(i--);
                     _plugin.FixedDesigns.Remove(name);
+                    continue;
                 }
 
                 var tmp = name.Enabled;
@@ -71,7 +72,11 @@ namespace Glamourer.Gui
                 if (ImGui.Checkbox($"##Enabled{i}", ref tmp))
                     if (tmp && _plugin.FixedDesigns.EnableDesign(name)
                      || !tmp && _plugin.FixedDesigns.DisableDesign(name))
+                    {
+                        Glamourer.Config.FixedDesigns[i].Enabled = tmp;
                         Glamourer.Config.Save();
+                    }
+
                 raii.PopStyles();
                 raii.PopFonts();
                 ImGui.TableNextColumn();

@@ -162,10 +162,13 @@ namespace Glamourer.Gui
             var       count    = set.Count(CustomizationId.FacialFeaturesTattoos);
             using (var _ = ImGuiRaii.NewGroup())
             {
+                var face = set.Race == Race.Hrothgar ? customization.Hairstyle : customization.Face;
+                if (set.Faces.Count < face)
+                    face = 1;
                 for (var i = 0; i < count; ++i)
                 {
                     var enabled = customization.FacialFeature(i);
-                    var feature = set.FacialFeature(set.Race == Race.Hrothgar ? customization.Hairstyle : customization.Face, i);
+                    var feature = set.FacialFeature(face, i);
                     var icon = i == count - 1
                         ? _legacyTattooIcon ?? Glamourer.Customization.GetIcon(feature.IconId)
                         : Glamourer.Customization.GetIcon(feature.IconId);
@@ -218,6 +221,7 @@ namespace Glamourer.Gui
             {
                 var custom = set.Data(id, i);
                 var icon   = Glamourer.Customization.GetIcon(custom.IconId);
+                ImGui.BeginGroup();
                 if (ImGui.ImageButton(icon.ImGuiHandle, _iconSize))
                 {
                     value = custom;
@@ -231,6 +235,11 @@ namespace Glamourer.Gui
                     ImGui.Image(icon.ImGuiHandle, new Vector2(icon.Width, icon.Height));
                 }
 
+                var text = custom.Value.ToString();
+                var textWidth = ImGui.CalcTextSize(text).X;
+                ImGui.SetCursorPosX(ImGui.GetCursorPosX() + (_iconSize.X - textWidth + 2 * ImGui.GetStyle().FramePadding.X)/2);
+                ImGui.Text(text);
+                ImGui.EndGroup();
                 if (i % 8 != 7)
                     ImGui.SameLine();
             }
@@ -249,7 +258,7 @@ namespace Glamourer.Gui
             var current = set.DataByValue(id, customization[id], out var custom);
             if (current < 0)
             {
-                PluginLog.Warning($"Read invalid customization value {customization[id]} for {id}.");
+                label   = $"{label} (Custom #{customization[id]})";
                 current = 0;
                 custom  = set.Data(id, 0);
             }
@@ -282,7 +291,7 @@ namespace Glamourer.Gui
             if (id == CustomizationId.Hairstyle && customization.Race == Race.Hrothgar)
                 customization[CustomizationId.Face] = (byte) ((customization[CustomizationId.Hairstyle] + 1) / 2);
 
-            ImGui.Text(label);
+            ImGui.Text($"{label} ({custom.Value.Value})");
             ImGuiCustom.HoverTooltip(tooltip);
 
             return ret;
@@ -349,13 +358,7 @@ namespace Glamourer.Gui
             ImGui.PushFont(UiBuilder.IconFont);
             var icon       = customization.Gender == Gender.Male ? FontAwesomeIcon.Mars : FontAwesomeIcon.Venus;
             var restricted = false;
-            if (customization.Race == Race.Viera)
-            {
-                ImGui.PushStyleVar(ImGuiStyleVar.Alpha, 0.25f);
-                icon       = FontAwesomeIcon.VenusDouble;
-                restricted = true;
-            }
-            else if (customization.Race == Race.Hrothgar)
+            if (customization.Race == Race.Hrothgar)
             {
                 ImGui.PushStyleVar(ImGuiStyleVar.Alpha, 0.25f);
                 icon       = FontAwesomeIcon.MarsDouble;
