@@ -60,10 +60,10 @@ public static class MetaExtensions
     public static string ToTooltip(this MetaIndex index)
         => index switch
         {
-            MetaIndex.HatState    => "Hide or show the characters head gear.",
-            MetaIndex.VisorState  => "Toggle the visor state of the characters head gear.",
-            MetaIndex.WeaponState => "Hide or show the characters weapons when not drawn.",
-            MetaIndex.Wetness     => "Force the character to be wet or not.",
+            MetaIndex.HatState    => "隐藏或显示角色的头部装备。",
+            MetaIndex.VisorState  => "切换角色头部装备的面罩状态。",
+            MetaIndex.WeaponState => "未手持时隐藏或显示角色武器。",
+            MetaIndex.Wetness     => "强制角色湿身或不湿身。",
             _                     => string.Empty,
         };
 }

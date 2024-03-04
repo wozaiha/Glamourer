@@ -158,7 +158,7 @@ public class MainWindow : Window, IDisposable
     /// <summary> Draw the support button group on the right-hand side of the window. </summary>
     public static void DrawSupportButtons(Changelog changelog)
     {
-        var width = ImGui.CalcTextSize("Join Discord for Support").X + ImGui.GetStyle().FramePadding.X * 2;
+        var width = ImGui.CalcTextSize("加入Discord获取支持").X + ImGui.GetStyle().FramePadding.X * 2;
         var xPos  = ImGui.GetWindowWidth() - width;
         ImGui.SetCursorPos(new Vector2(xPos, 0));
         CustomGui.DrawDiscordButton(Glamourer.Messager, width);
@@ -167,7 +167,10 @@ public class MainWindow : Window, IDisposable
         CustomGui.DrawGuideButton(Glamourer.Messager, width);
 
         ImGui.SetCursorPos(new Vector2(xPos, 2 * ImGui.GetFrameHeightWithSpacing()));
-        if (ImGui.Button("Show Changelogs", new Vector2(width, 0)))
+        CustomGui.DrawCNDiscordButton(Glamourer.Messager, width);
+
+        ImGui.SetCursorPos(new Vector2(xPos, 3 * ImGui.GetFrameHeightWithSpacing()));
+        if (ImGui.Button("显示更新日志", new Vector2(width, 0)))
             changelog.ForceOpen = true;
     }
 

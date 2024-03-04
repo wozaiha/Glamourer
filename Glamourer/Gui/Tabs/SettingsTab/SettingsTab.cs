@@ -34,7 +34,7 @@ public class SettingsTab(
     private readonly VirtualKey[] _validKeys = keys.GetValidVirtualKeys().Prepend(VirtualKey.NO_KEY).ToArray();
 
     public ReadOnlySpan<byte> Label
-        => "Settings"u8;
+        => "插件设置"u8;
 
     private string _currentCode = string.Empty;
 
@@ -44,9 +44,10 @@ public class SettingsTab(
         if (!child)
             return;
 
-        Checkbox("Enable Auto Designs",
-            "Enable the application of designs associated to characters in the Automation tab to be applied automatically.",
+        Checkbox("启用自动执行",
+            "启用关联角色的自动执行功能。",
             config.EnableAutoDesigns, v => config.EnableAutoDesigns = v);
+        ImGui.NewLine();
         ImGui.NewLine();
         ImGui.NewLine();
         ImGui.NewLine();
@@ -65,62 +66,62 @@ public class SettingsTab(
 
     private void DrawBehaviorSettings()
     {
-        if (!ImGui.CollapsingHeader("Glamourer Behavior"))
+        if (!ImGui.CollapsingHeader("特性"))
             return;
 
-        Checkbox("Always Apply Entire Weapon for Mainhand",
-            "When manually applying a mainhand item, will also apply a corresponding offhand and potentially gauntlets for certain fist weapons.",
+        Checkbox("总是为主手应用整套武器",
+            "当手动应用主手武器时，自动应用对应的副手武器。",
             config.ChangeEntireItem, v => config.ChangeEntireItem = v);
-        Checkbox("Use Replacement Gear for Gear Unavailable to Your Race or Gender",
-            "Use different gender- and race-appropriate models as a substitute when detecting certain items not available for a characters current gender and race.",
+        Checkbox("自动替换不兼容种族和性别的装备",
+            "当检测到某些项目不适用角色当前的种族和性别时，使用匹配种族和性别的模型。",
             config.UseRestrictedGearProtection, v => config.UseRestrictedGearProtection = v);
-        Checkbox("Do Not Apply Unobtained Items in Automation",
-            "Enable this if you want automatically applied designs to only consider items and customizations you have actually unlocked once, and skip those you have not.",
+        Checkbox("不在自动执行集中使用未获得过的物品",
+            "如果你希望“自动执行”中只使用你已经获取过一次的物品，不使用那些从未获取过的物品，就启用这个选项。",
             config.UnlockedItemMode, v => config.UnlockedItemMode = v);
-        Checkbox("Respect Manual Changes When Editing Automation",
-            "Whether changing any currently active automation group will respect manual changes to the character before re-applying the changed automation or not.",
+        Checkbox("编辑自动化时尊重手动更改",
+            "对当前任何处于活动状态的自动执行组进行更改，在重新应用修改后的自动执行时是否保留手动作出的更改。",
             config.RespectManualOnAutomationUpdate, v => config.RespectManualOnAutomationUpdate = v);
-        Checkbox("Enable Festival Easter-Eggs",
-            "Glamourer may do some fun things on specific dates. Disable this if you do not want your experience disrupted by this.",
+        Checkbox("启动节日彩蛋",
+            "Glamourer也许会在一些特别的日子做一些有趣的事情。如果你觉得这会影响你的体验，请禁用此选项。",
             config.DisableFestivals == 0, v => config.DisableFestivals = v ? (byte)0 : (byte)2);
-        Checkbox("Auto-Reload Gear",
-            "Automatically reload equipment pieces on your own character when changing any mod options in Penumbra in their associated collection.",
+        Checkbox("自动重新加载装备",
+            "在更改Penumbra模组选项时，自动在自己的角色身上重新加载装备部件。",
             config.AutoRedrawEquipOnChanges, v => config.AutoRedrawEquipOnChanges = v);
-        Checkbox("Revert Manual Changes on Zone Change",
-            "Restores the old behaviour of reverting your character to its game or automation base whenever you change the zone.",
+        Checkbox("在更换区域时撤销手动更改",
+            "当你更换区域时，撤销你对角色进行的手动更改，恢复到游戏基础状态或自动执行状态。",
             config.RevertManualChangesOnZoneChange, v => config.RevertManualChangesOnZoneChange = v);
-        Checkbox("Enable Advanced Customization Options",
-            "Enable the display and editing of advanced customization options like arbitrary colors.",
+        Checkbox("启用外貌（高级）选项",
+            "启用外貌（高级）选项（如调色板）的显示和编辑。",
             config.UseAdvancedParameters, paletteChecker.SetAdvancedParameters);
         PaletteImportButton();
-        Checkbox("Enable Advanced Dye Options",
-            "Enable the display and editing of advanced dyes (color sets) for all equipment",
+        Checkbox("启用染色（高级）选项",
+            "启用所有装备的高级染色（颜色集）的显示和编辑",
             config.UseAdvancedDyes, v => config.UseAdvancedDyes = v);
-        Checkbox("Always Apply Associated Mods",
-            "Whenever a design is applied to a character (including via automation), Glamourer will try to apply its associated mod settings to the collection currently associated with that character, if it is available.\n\n"
-          + "Glamourer will NOT revert these applied settings automatically. This may mess up your collection and configuration.\n\n"
-          + "If you enable this setting, you are aware that any resulting misconfiguration is your own fault.",
+        Checkbox("始终应用关联的模组",
+            "无论何时将设计应用于角色（包括自动执行）时，Glamourer都会尝试将设计相关的模组设置应用于当前与该角色相关的合集（如果可用）。\n\n"
+          + "Glamourer不会自动还原这些应用的设置。这可能会打乱你的合集和配置。\n\n"
+          + "如果你启用此设置，你应意识到任何由此产生的配置错误都是你自己造成的。。",
             config.AlwaysApplyAssociatedMods, v => config.AlwaysApplyAssociatedMods = v);
         ImGui.NewLine();
     }
 
     private void DrawInterfaceSettings()
     {
-        if (!ImGui.CollapsingHeader("Interface"))
+        if (!ImGui.CollapsingHeader("界面"))
             return;
 
-        EphemeralCheckbox("Show Quick Design Bar",
-            "Show a bar separate from the main window that allows you to quickly apply designs or revert your character and target.",
+        EphemeralCheckbox("显示快速设计栏",
+            "显示一个与主窗口分离的工具栏，允许您快速应用设计、恢复角色和目标。",
             config.Ephemeral.ShowDesignQuickBar, v => config.Ephemeral.ShowDesignQuickBar = v);
-        EphemeralCheckbox("Lock Quick Design Bar", "Prevent the quick design bar from being moved and lock it in place.",
+        EphemeralCheckbox("锁定快速设计栏", "防止快速设计栏被移动，将其锁定在当前位置。",
             config.Ephemeral.LockDesignQuickBar,
             v => config.Ephemeral.LockDesignQuickBar = v);
-        if (Widget.ModifiableKeySelector("Hotkey to Toggle Quick Design Bar", "Set a hotkey that opens or closes the quick design bar.",
+        if (Widget.ModifiableKeySelector("快速设计栏开关热键", "设置一个用于打开或关闭快速设计栏的热键。",
                 100 * ImGuiHelpers.GlobalScale,
                 config.ToggleQuickDesignBar, v => config.ToggleQuickDesignBar = v, _validKeys))
             config.Save();
-        Checkbox("Show Quick Design Bar in Main Window",
-            "Show the quick design bar in the tab selection part of the main window, too.",
+        Checkbox("在主窗口中显示快速设计栏",
+            "也在主窗口的选项卡的选择区域显示快速设计栏。",
             config.ShowQuickBarInTabs, v => config.ShowQuickBarInTabs = v);
         DrawQuickDesignBoxes();
 
@@ -128,7 +129,7 @@ public class SettingsTab(
         ImGui.Separator();
         ImGui.Dummy(Vector2.Zero);
 
-        Checkbox("Enable Game Context Menus", "Whether to show a Try On via Glamourer button on context menus for equippable items.",
+        Checkbox("启用游戏右键菜单", "在可装备物品的游戏右键菜单中增加一个Glamourer试穿按钮。",
             config.EnableGameContextMenu,     v =>
             {
                 config.EnableGameContextMenu = v;
@@ -137,39 +138,39 @@ public class SettingsTab(
                 else
                     contextMenuService.Disable();
             });
-        Checkbox("Show Window when UI is Hidden", "Whether to show Glamourer windows even when the games UI is hidden.",
+        Checkbox("在用户界面隐藏时显示窗口", "即使游戏UI隐藏，也可以显示Glamourer窗口。",
             config.ShowWindowWhenUiHidden,        v =>
             {
                 config.ShowWindowWhenUiHidden = v;
                 uiBuilder.DisableUserUiHide   = v;
             });
-        Checkbox("Hide Window in Cutscenes", "Whether the main Glamourer window should automatically be hidden when entering cutscenes or not.",
+        Checkbox("在过场动画中隐藏窗口", "在进入过场动画时，Glamourer主窗口是否应该自动隐藏。",
             config.HideWindowInCutscene,
             v =>
             {
                 config.HideWindowInCutscene     = v;
                 uiBuilder.DisableCutsceneUiHide = !v;
             });
-        EphemeralCheckbox("Lock Main Window", "Prevent the main window from being moved and lock it in place.",
+        EphemeralCheckbox("锁定主窗口", "防止主窗口被移动，将其锁定在当前位置。",
             config.Ephemeral.LockMainWindow,
             v => config.Ephemeral.LockMainWindow = v);
-        Checkbox("Open Main Window at Game Start", "Whether the main Glamourer window should be open or closed after launching the game.",
+        Checkbox("在游戏开始时打开主窗口", "启动游戏后，Glamourer主窗口是打开还是关闭状态。",
             config.OpenWindowAtStart,              v => config.OpenWindowAtStart = v);
         ImGui.Dummy(Vector2.Zero);
         ImGui.Separator();
         ImGui.Dummy(Vector2.Zero);
 
-        Checkbox("Smaller Equip Display", "Use single-line display without icons and small dye buttons instead of double-line display.",
+        Checkbox("装备面板紧凑显示", "使用不显示装备图标、有小染色按钮的单行视图，取代两行视图。",
             config.SmallEquip,            v => config.SmallEquip = v);
-        Checkbox("Show Application Checkboxes",
-            "Show the application checkboxes in the Customization and Equipment panels of the design tab, instead of only showing them under Application Rules.",
+        Checkbox("显示应用复选框",
+            "显示“角色设计”选项卡下外貌和装备面板中的应用生效复选框，而不是仅在“应用规则”面板中显示。",
             !config.HideApplyCheckmarks, v => config.HideApplyCheckmarks = !v);
-        if (Widget.DoubleModifierSelector("Design Deletion Modifier",
-                "A modifier you need to hold while clicking the Delete Design button for it to take effect.", 100 * ImGuiHelpers.GlobalScale,
+        if (Widget.DoubleModifierSelector("删除组合键",
+                "在所有的删除按钮上生效所需要的组合键。", 100 * ImGuiHelpers.GlobalScale,
                 config.DeleteDesignModifier, v => config.DeleteDesignModifier = v))
             config.Save();
-        Checkbox("Auto-Open Design Folders",
-            "Have design folders open or closed as their default state after launching.", config.OpenFoldersByDefault,
+        Checkbox("自动展开角色设计折叠组",
+            "登录游戏后，角色设计折叠组默认状态打开还是关闭。", config.OpenFoldersByDefault,
             v => config.OpenFoldersByDefault = v);
         DrawFolderSortType();
 
@@ -177,21 +178,21 @@ public class SettingsTab(
         ImGui.Separator();
         ImGui.Dummy(Vector2.Zero);
 
-        Checkbox("Allow Double-Clicking Designs to Apply",
-            "Tries to apply a design to the current player character When double-clicking it in the design selector.",
+        Checkbox("允许双击应用设计",
+            "在设计选择其中双击角色设计条目时，尝试将该设计应用于玩家的角色。",
             config.AllowDoubleClickToApply, v => config.AllowDoubleClickToApply = v);
-        Checkbox("Show all Application Rule Checkboxes for Automation",
-            "Show multiple separate application rule checkboxes for automated designs, instead of a single box for enabling or disabling.",
+        Checkbox("在执行集的“执行规则”中显示所有复选框",
+            "在执行规则中显示多个单独规则的复选框，而不是只显示一个一键开关的复选框。",
             config.ShowAllAutomatedApplicationRules, v => config.ShowAllAutomatedApplicationRules = v);
-        Checkbox("Show Unobtained Item Warnings",
-            "Show information whether you have unlocked all items and customizations in your automated design or not.",
+        Checkbox("对获取物品显示警告",
+            "无论你是否已解锁角色设计中的所有装备/外貌物品，在执行集中显示提示信息。",
             config.ShowUnlockedItemWarnings, v => config.ShowUnlockedItemWarnings = v);
         if (config.UseAdvancedParameters)
         {
-            Checkbox("Show Color Display Config", "Show the Color Display configuration options in the Advanced Customization panels.",
+            Checkbox("显示颜色显示设置", "在“外貌（高级）”面板中显示颜色显示设置选项。",
                 config.ShowColorConfig,           v => config.ShowColorConfig = v);
-            Checkbox("Show Palette+ Import Button",
-                "Show the import button that allows you to import Palette+ palettes onto a design in the Advanced Customization options section for designs.",
+            Checkbox("显示Palette+导入按钮",
+                "在角色设计的“外貌（高级）”面板中显示一个导入按钮，该按钮允许你将调色板插件Palette++的设置导入到设计中。",
                 config.ShowPalettePlusImport, v => config.ShowPalettePlusImport = v);
             using var id = ImRaii.PushId(1);
             PaletteImportButton();
@@ -202,7 +203,7 @@ public class SettingsTab(
                 "Keeps the advanced dye window expansion attached to the main window, or makes it freely movable.",
                 config.KeepAdvancedDyesAttached, v => config.KeepAdvancedDyesAttached = v);
 
-        Checkbox("Debug Mode", "Show the debug tab. Only useful for debugging or advanced use. Not recommended in general.", config.DebugMode,
+        Checkbox("调试模式", "显示调试选项卡，仅对调试和进阶用法有帮助。一般不建议使用。", config.DebugMode,
             v => config.DebugMode = v);
         ImGui.NewLine();
     }
@@ -213,7 +214,7 @@ public class SettingsTab(
         var showAdvanced = config.UseAdvancedParameters || config.UseAdvancedDyes;
         var numColumns   = 6 - (showAuto ? 0 : 1) - (showAdvanced ? 0 : 1);
         ImGui.NewLine();
-        ImGui.TextUnformatted("Show the Following Buttons in the Quick Design Bar:");
+        ImGui.TextUnformatted("在快速设计栏中显示以下按钮：");
         ImGui.Dummy(Vector2.Zero);
         using var table = ImRaii.Table("##tableQdb", numColumns,
             ImGuiTableFlags.SizingFixedFit | ImGuiTableFlags.Borders | ImGuiTableFlags.NoHostExtendX);
@@ -222,12 +223,12 @@ public class SettingsTab(
 
         var columns = new[]
         {
-            (" Apply Design ", true, QdbButtons.ApplyDesign),
-            (" Revert All ", true, QdbButtons.RevertAll),
-            (" Revert to Auto ", showAuto, QdbButtons.RevertAutomation),
-            (" Revert Equip ", true, QdbButtons.RevertEquip),
-            (" Revert Customization ", true, QdbButtons.RevertCustomize),
-            (" Revert Advanced ", showAdvanced, QdbButtons.RevertAdvanced),
+            (" 应用设计 ", true, QdbButtons.ApplyDesign),
+            (" 全部还原 ", true, QdbButtons.RevertAll),
+            (" 恢复自动 ", showAuto, QdbButtons.RevertAutomation),
+            (" 还原装备 ", true, QdbButtons.RevertEquip),
+            (" 还原外貌 ", true, QdbButtons.RevertCustomize),
+            (" 还原高级选项 ", showAdvanced, QdbButtons.RevertAdvanced),
         };
 
         foreach (var (label, _, _) in columns.Where(t => t.Item2))
@@ -261,25 +262,25 @@ public class SettingsTab(
             return;
 
         ImGui.SameLine();
-        if (ImGui.Button("Import Palette+ to Designs"))
+        if (ImGui.Button("导入调色板插件Palette+的设计"))
             paletteImport.ImportDesigns();
         ImGuiUtil.HoverTooltip(
-            $"Import all existing Palettes from your Palette+ Config into Designs at PalettePlus/[Name] if these do not exist. Existing Palettes are:\n\n\t - {string.Join("\n\t - ", paletteImport.Data.Keys)}");
+            $"从你的调色板插件Palette+的配置中导入所有存在的数据到角色设计选项卡下，目录结构为PalettePlus/[名称]（如果还无同名设计存在）。现有调色板为：\n\n\t - {string.Join("\n\t - ", paletteImport.Data.Keys)}");
     }
 
     /// <summary> Draw the entire Color subsection. </summary>
     private void DrawColorSettings()
     {
-        if (!ImGui.CollapsingHeader("Colors"))
+        if (!ImGui.CollapsingHeader("配色"))
             return;
 
-        using (var tree = ImRaii.TreeNode("Custom Design Colors"))
+        using (var tree = ImRaii.TreeNode("自定义设计颜色"))
         {
             if (tree)
                 designColorUi.Draw();
         }
 
-        using (var tree = ImRaii.TreeNode("Color Settings"))
+        using (var tree = ImRaii.TreeNode("配色设置"))
         {
             if (tree)
                 foreach (var color in Enum.GetValues<ColorId>())
@@ -297,11 +298,11 @@ public class SettingsTab(
     private void DrawCodes()
     {
         const string tooltip =
-            "Cheat Codes are not actually for cheating in the game, but for 'cheating' in Glamourer. They allow for some fun easter-egg modes that usually manipulate the appearance of all players you see (including yourself) in some way.\n\n"
-          + "Cheat Codes are generally pop culture references, but it is unlikely you will be able to guess any of them based on nothing. Some codes have been published on the discord server, but other than that, we are still undecided on how and when to publish them or add any new ones. Maybe some will be hidden in the change logs or on the help pages. Or maybe I will just add hints in this section later on.\n\n"
-          + "In any case, you are not losing out on anything important if you never look at this section and there is no real reason to go on a treasure hunt for them. It is mostly something I added because it was fun for me.";
+            "作弊代码实际上不是针对游戏内容的作弊，而是对Glamourer的“作弊”。它们会实现一些有趣的彩蛋，比如以某种方式改变你看到的所有玩家（包括你自己）的外观。\n\n"
+          + "作弊代码一般是一些参考自流行文化的词语，但你不太可能猜出来。有些代码已经发布到了Discord服务器上，其它的代码我们还没有决定在何时以什么方法发布和添加。也许有些代码会隐藏在更新日志或帮助页面中。或者我稍后在这里添加提示。\n\n"
+          + "无论如何，如果你没注意到这里，或者没有寻宝的兴趣，你不会失去任何重要的东西。添加这些内容，仅仅因为对我来说很有趣。";
 
-        var show = ImGui.CollapsingHeader("Cheat Codes");
+        var show = ImGui.CollapsingHeader("作弊代码");
         if (ImGui.IsItemHovered())
         {
             ImGui.SetNextWindowSize(new Vector2(400, 0));
@@ -316,7 +317,7 @@ public class SettingsTab(
         {
             var       color = codeService.CheckCode(_currentCode) != null ? ColorId.ActorAvailable : ColorId.ActorUnavailable;
             using var c     = ImRaii.PushColor(ImGuiCol.Border, color.Value(), _currentCode.Length > 0);
-            if (ImGui.InputTextWithHint("##Code", "Enter Cheat Code...", ref _currentCode, 512, ImGuiInputTextFlags.EnterReturnsTrue))
+            if (ImGui.InputTextWithHint("##Code", "输入作弊代码...", ref _currentCode, 512, ImGuiInputTextFlags.EnterReturnsTrue))
                 if (codeService.AddCode(_currentCode))
                     _currentCode = string.Empty;
         }
@@ -408,6 +409,6 @@ public class SettingsTab(
                 }
         }
 
-        ImGuiUtil.LabeledHelpMarker("Sort Mode", "Choose the sort mode for the mod selector in the designs tab.");
+        ImGuiUtil.LabeledHelpMarker("排序模式", "为角色设计选项卡下的设计选择器选择一个排序方式。");
     }
 }

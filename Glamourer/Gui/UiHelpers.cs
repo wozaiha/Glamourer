@@ -1,4 +1,4 @@
-using Dalamud.Interface;
+﻿using Dalamud.Interface;
 using Dalamud.Interface.Utility;
 using Glamourer.GameData;
 using Glamourer.Services;
@@ -89,7 +89,7 @@ public static class UiHelpers
             }
         }
 
-        ImGuiUtil.HoverTooltip($"This attribute will be {(currentApply ? currentValue ? "enabled." : "disabled." : "kept as is.")}");
+        ImGuiUtil.HoverTooltip($"此属性将被{(currentApply ? currentValue ? "启用。" : "禁用。" : "保持原样。")}");
 
         ImGui.SameLine(0, ImGui.GetStyle().ItemInnerSpacing.X);
         ImGui.AlignTextToFramePadding();

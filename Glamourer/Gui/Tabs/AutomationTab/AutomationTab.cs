@@ -16,7 +16,7 @@ public class AutomationTab : ITab
     }
 
     public ReadOnlySpan<byte> Label
-        => "Automation"u8;
+        => "自动执行"u8;
 
     public void DrawContent()
     {

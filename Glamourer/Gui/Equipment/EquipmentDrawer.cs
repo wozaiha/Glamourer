@@ -143,7 +143,7 @@ public class EquipmentDrawer
     public bool DrawAllStain(out StainId ret, bool locked)
     {
         using var disabled = ImRaii.Disabled(locked);
-        var       change   = _stainCombo.Draw("Dye All Slots", Stain.None.RgbaColor, string.Empty, false, false, MouseWheelType.None);
+        var       change   = _stainCombo.Draw("为所有装备槽染色", Stain.None.RgbaColor, string.Empty, false, false, MouseWheelType.None);
         ret = Stain.None.RowIndex;
         if (change)
             if (_stainData.TryGetValue(_stainCombo.CurrentSelection.Key, out var stain))
@@ -159,7 +159,7 @@ public class EquipmentDrawer
                 change = true;
             }
 
-            ImGuiUtil.HoverTooltip($"{_config.DeleteDesignModifier.ToString()} and Right-click to clear.");
+            ImGuiUtil.HoverTooltip($"{_config.DeleteDesignModifier.ToString()}和右键单击进行清理。");
         }
 
         return change;
@@ -492,14 +492,14 @@ public class EquipmentDrawer
         (var tt, item, var valid) = (allowRevert && !revertItem.Equals(currentItem), allowClear && !clearItem.Equals(currentItem),
                 ImGui.GetIO().KeyCtrl) switch
             {
-                (true, true, true) => ("Right-click to clear. Control and Right-Click to revert to game.\nControl and mouse wheel to scroll.",
+                (true, true, true) => ("右键单击进行清除。Ctrl+右键单击可恢复到游戏状态。\nCtrl+鼠标滚轮滚动。",
                     revertItem, true),
-                (true, true, false) => ("Right-click to clear. Control and Right-Click to revert to game.\nControl and mouse wheel to scroll.",
+                (true, true, false) => ("右键单击进行清除。Ctrl+右键单击可恢复到游戏状态。\nCtrl+鼠标滚轮滚动。",
                     clearItem, true),
-                (true, false, true)  => ("Control and Right-Click to revert to game.\nControl and mouse wheel to scroll.", revertItem, true),
-                (true, false, false) => ("Control and Right-Click to revert to game.\nControl and mouse wheel to scroll.", default, false),
-                (false, true, _)     => ("Right-click to clear.\nControl and mouse wheel to scroll.", clearItem, true),
-                (false, false, _)    => ("Control and mouse wheel to scroll.", default, false),
+                (true, false, true)  => ("Ctrl+右键单击可恢复到游戏状态。\nCtrl+鼠标滚轮滚动。", revertItem, true),
+                (true, false, false) => ("Ctrl+右键单击可恢复到游戏状态。\nCtrl+鼠标滚轮滚动。", default, false),
+                (false, true, _)     => ("右键单击进行清除。\nCtrl+鼠标滚轮滚动。", clearItem, true),
+                (false, false, _)    => ("Ctrl+鼠标滚轮滚动。", default, false),
             };
         ImGuiUtil.HoverTooltip(tt);
 
@@ -572,14 +572,14 @@ public class EquipmentDrawer
 
     private static void DrawApply(in EquipDrawData data)
     {
-        if (UiHelpers.DrawCheckbox($"##apply{data.Slot}", "Apply this item when applying the Design.", data.CurrentApply, out var enabled,
+        if (UiHelpers.DrawCheckbox($"##apply{data.Slot}", "应用设计时应用此项。", data.CurrentApply, out var enabled,
                 data.Locked))
             data.SetApplyItem(enabled);
     }
 
     private static void DrawApplyStain(in EquipDrawData data)
     {
-        if (UiHelpers.DrawCheckbox($"##applyStain{data.Slot}", "Apply this item when applying the Design.", data.CurrentApplyStain,
+        if (UiHelpers.DrawCheckbox($"##applyStain{data.Slot}", "应用设计时应用此项。", data.CurrentApplyStain,
                 out var enabled,
                 data.Locked))
             data.SetApplyStain(enabled);
@@ -591,8 +591,8 @@ public class EquipmentDrawer
     {
         ImGui.SameLine();
         ImGuiComponents.HelpMarker(
-            "Changing weapons to weapons of different types can cause crashes, freezes, soft- and hard locks and cheating, "
-          + "thus it is only allowed to change weapons to other weapons of the same type.");
+            "将武器更换为不同类型的武器可能会导致碰撞、冻结、软锁和硬锁以及作弊， "
+          + "因此，只允许将武器改为其他同类武器。");
         ImGui.SameLine();
         ImGui.TextUnformatted(label);
         if (type == null)

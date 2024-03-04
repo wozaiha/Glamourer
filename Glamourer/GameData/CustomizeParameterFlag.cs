@@ -47,19 +47,19 @@ public static class CustomizeParameterExtensions
     public static string ToName(this CustomizeParameterFlag flag)
         => flag switch
         {
-            CustomizeParameterFlag.SkinDiffuse           => "Skin Color",
-            CustomizeParameterFlag.MuscleTone            => "Muscle Tone",
-            CustomizeParameterFlag.SkinSpecular          => "Skin Shine",
-            CustomizeParameterFlag.LipDiffuse            => "Lip Color",
-            CustomizeParameterFlag.HairDiffuse           => "Hair Color",
-            CustomizeParameterFlag.HairSpecular          => "Hair Shine",
-            CustomizeParameterFlag.HairHighlight         => "Hair Highlights",
-            CustomizeParameterFlag.LeftEye               => "Left Eye Color",
-            CustomizeParameterFlag.RightEye              => "Right Eye Color",
-            CustomizeParameterFlag.FeatureColor          => "Tattoo Color",
-            CustomizeParameterFlag.FacePaintUvMultiplier => "Multiplier for Face Paint",
-            CustomizeParameterFlag.FacePaintUvOffset     => "Offset of Face Paint",
-            CustomizeParameterFlag.DecalColor            => "Face Paint Color",
+            CustomizeParameterFlag.SkinDiffuse           => "皮肤颜色",
+            CustomizeParameterFlag.MuscleTone            => "肌肉强度",
+            CustomizeParameterFlag.SkinSpecular          => "皮肤光泽",
+            CustomizeParameterFlag.LipDiffuse            => "嘴唇颜色",
+            CustomizeParameterFlag.HairDiffuse           => "头发颜色",
+            CustomizeParameterFlag.HairSpecular          => "头发光泽",
+            CustomizeParameterFlag.HairHighlight         => "头发挑染",
+            CustomizeParameterFlag.LeftEye               => "左眼瞳色",
+            CustomizeParameterFlag.RightEye              => "右眼瞳色",
+            CustomizeParameterFlag.FeatureColor          => "纹身颜色",
+            CustomizeParameterFlag.FacePaintUvMultiplier => "面妆倍增器",
+            CustomizeParameterFlag.FacePaintUvOffset     => "面妆偏移",
+            CustomizeParameterFlag.DecalColor            => "面妆颜色",
             _                                            => string.Empty,
         };
 }

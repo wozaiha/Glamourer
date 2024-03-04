@@ -91,7 +91,7 @@ public class ActorPanel(
     private (string, Actor) GetHeaderName()
     {
         if (!_identifier.IsValid)
-            return ("No Selection", Actor.Null);
+            return ("未选择", Actor.Null);
 
         if (_data.Valid)
             return (_selector.IncognitoMode ? _identifier.Incognito(_data.Label) : _data.Label, _data.Objects[0]);
@@ -134,7 +134,7 @@ public class ActorPanel(
     private void DrawCustomizationsHeader()
     {
         var header = _state!.ModelData.ModelId == 0
-            ? "Customization"
+            ? "外貌"
             : $"Customization (Model Id #{_state.ModelData.ModelId})###Customization";
         using var h = ImRaii.CollapsingHeader(header);
         if (!h)
@@ -149,7 +149,7 @@ public class ActorPanel(
 
     private void DrawEquipmentHeader()
     {
-        using var h = ImRaii.CollapsingHeader("Equipment");
+        using var h = ImRaii.CollapsingHeader("装备");
         if (!h)
             return;
 
@@ -178,7 +178,7 @@ public class ActorPanel(
         if (!_config.UseAdvancedParameters)
             return;
 
-        using var h = ImRaii.CollapsingHeader("Advanced Customizations");
+        using var h = ImRaii.CollapsingHeader("外貌（高级）");
         if (!h)
             return;
 
@@ -211,13 +211,13 @@ public class ActorPanel(
     private void DrawMonsterPanel()
     {
         var names     = _modelChara[_state!.ModelData.ModelId];
-        var turnHuman = ImGui.Button("Turn Human");
+        var turnHuman = ImGui.Button("变为人类");
         ImGui.Separator();
         using (_ = ImRaii.ListBox("##MonsterList",
                    new Vector2(ImGui.GetContentRegionAvail().X, 10 * ImGui.GetTextLineHeightWithSpacing())))
         {
             if (names.Count == 0)
-                ImGui.TextUnformatted("Unknown Monster");
+                ImGui.TextUnformatted("未知怪物");
             else
                 ImGuiClip.ClippedDraw(names, p => ImGui.TextUnformatted($"{p.Name} ({p.Kind.ToName()} #{p.Id})"),
                     ImGui.GetTextLineHeightWithSpacing());
@@ -273,7 +273,7 @@ public class ActorPanel(
         => new()
         {
             Description =
-                "Try to apply a design from your clipboard.\nHold Control to only apply gear.\nHold Shift to only apply customizations.",
+                "尝试应用剪贴板中的设计。\n按住CTRL仅应用装备。\n按住Shift仅应用外貌。",
             Icon     = FontAwesomeIcon.Clipboard,
             OnClick  = SetFromClipboard,
             Visible  = _state != null,
@@ -284,7 +284,7 @@ public class ActorPanel(
         => new()
         {
             Description =
-                "Copy the current design to your clipboard.\nHold Control to disable applying of customizations for the copied design.\nHold Shift to disable applying of gear for the copied design.",
+                "复制当前设计到剪贴板。\n按住CTRL不复制外貌。\n按住Shift不复制装备。",
             Icon    = FontAwesomeIcon.Copy,
             OnClick = ExportToClipboard,
             Visible = _state?.ModelData.ModelId == 0,
@@ -294,7 +294,7 @@ public class ActorPanel(
         => new()
         {
             Description =
-                "Save the current state as a design.\nHold Control to disable applying of customizations for the saved design.\nHold Shift to disable applying of gear for the saved design.",
+                "将当前状态保存到“角色设计”。\n按住CTRL不保存外貌。\n按住Shift不保存装备。",
             Icon    = FontAwesomeIcon.Save,
             OnClick = SaveDesignOpen,
             Visible = _state?.ModelData.ModelId == 0,
@@ -303,7 +303,7 @@ public class ActorPanel(
     private HeaderDrawer.Button LockedButton()
         => new()
         {
-            Description = "The current state of this actor is locked by external tools.",
+            Description = "此角色的当前状态已被外部工具锁定。",
             Icon        = FontAwesomeIcon.Lock,
             OnClick     = () => { },
             Disabled    = true,
@@ -317,14 +317,14 @@ public class ActorPanel(
 
     private void SaveDesignOpen()
     {
-        ImGui.OpenPopup("Save as Design");
+        ImGui.OpenPopup("保存为设计");
         _newName   = _state!.Identifier.ToName();
         _newDesign = _converter.Convert(_state, ApplicationRules.FromModifiers(_state));
     }
 
     private void SaveDesignDrawPopup()
     {
-        if (!ImGuiUtil.OpenNameField("Save as Design", ref _newName))
+        if (!ImGuiUtil.OpenNameField("保存为设计", ref _newName))
             return;
 
         if (_newDesign != null && _newName.Length > 0)
@@ -366,18 +366,18 @@ public class ActorPanel(
 
     private void RevertButtons()
     {
-        if (ImGuiUtil.DrawDisabledButton("Revert to Game", Vector2.Zero, "Revert the character to its actual state in the game.",
+        if (ImGuiUtil.DrawDisabledButton("恢复游戏状态", Vector2.Zero, "恢复角色到游戏中的真实状态。",
                 _state!.IsLocked))
             _stateManager.ResetState(_state!, StateSource.Manual);
 
         ImGui.SameLine();
-        if (ImGuiUtil.DrawDisabledButton("Reapply State", Vector2.Zero, "Try to reapply the configured state if something went wrong.",
+        if (ImGuiUtil.DrawDisabledButton("重新应用状态", Vector2.Zero, "如果出现问题，尝试重新应用配置中的状态。",
                 _state!.IsLocked))
             _stateManager.ReapplyState(_actor, StateSource.Manual);
 
         ImGui.SameLine();
-        if (ImGuiUtil.DrawDisabledButton("Reapply Automation", Vector2.Zero,
-                "Try to revert the character to the state it would have using automated designs.",
+        if (ImGuiUtil.DrawDisabledButton("重新应用自动执行", Vector2.Zero,
+                "尝试将角色恢复到自动执行中设计的状态。",
                 !_config.EnableAutoDesigns || _state!.IsLocked))
         {
             _autoDesignApplier.ReapplyAutomation(_actor, _identifier, _state!);
@@ -388,8 +388,8 @@ public class ActorPanel(
     private void DrawApplyToSelf()
     {
         var (id, data) = _objects.PlayerData;
-        if (!ImGuiUtil.DrawDisabledButton("Apply to Yourself", Vector2.Zero,
-                "Apply the current state to your own character.\nHold Control to only apply gear.\nHold Shift to only apply customizations.",
+        if (!ImGuiUtil.DrawDisabledButton("应用到自己", Vector2.Zero,
+                "应用当前状态到你自己的角色。\n按住CTRL仅应用装备。\n按住Shift仅应用外貌。",
                 !data.Valid || id == _identifier || _state!.ModelData.ModelId != 0))
             return;
 
@@ -403,10 +403,10 @@ public class ActorPanel(
         var (id, data) = _objects.TargetData;
         var tt = id.IsValid
             ? data.Valid
-                ? "Apply the current state to your current target.\nHold Control to only apply gear.\nHold Shift to only apply customizations."
-                : "The current target can not be manipulated."
-            : "No valid target selected.";
-        if (!ImGuiUtil.DrawDisabledButton("Apply to Target", Vector2.Zero, tt,
+                ? "应用当前状态到你选中的目标。"
+                : "无法应用到当前目标。"
+            : "没有选中有效的目标。";
+        if (!ImGuiUtil.DrawDisabledButton("应用到目标", Vector2.Zero, tt,
                 !data.Valid || id == _identifier || _state!.ModelData.ModelId != 0))
             return;
 

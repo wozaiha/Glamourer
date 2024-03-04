@@ -51,8 +51,8 @@ public partial class CustomizationDrawer
             UpdateValue(newValue);
         }
 
-        ImGuiUtil.HoverTooltip($"Input Range: [0, {_currentCount - 1}]\n"
-          + "Hold Control to force updates with invalid/unknown options at your own risk.");
+        ImGuiUtil.HoverTooltip($"输入范围：[0, {_currentCount - 1}]\n"
+          + "按住Ctrl键强制输入无效/未知参数，风险自负。");
     }
 
     // Integral input for an icon- or color based item.
@@ -80,16 +80,16 @@ public partial class CustomizationDrawer
         }
 
         if (!_withApply)
-            ImGuiUtil.HoverTooltip("Hold Control to force updates with invalid/unknown options at your own risk.");
+            ImGuiUtil.HoverTooltip("按住Ctrl键强制输入无效/未知参数，风险自负。");
 
         ImGui.SameLine();
-        if (ImGuiUtil.DrawDisabledButton("-", new Vector2(ImGui.GetFrameHeight()), "Select the previous available option in order.",
+        if (ImGuiUtil.DrawDisabledButton("-", new Vector2(ImGui.GetFrameHeight()), "按顺序选择上一个可用选项。",
                 currentIndex <= 0))
             UpdateValue(_set.Data(_currentIndex, currentIndex - 1, _customize.Face).Value);
         else
             CheckWheel();
         ImGui.SameLine();
-        if (ImGuiUtil.DrawDisabledButton("+", new Vector2(ImGui.GetFrameHeight()), "Select the next available option in order.",
+        if (ImGuiUtil.DrawDisabledButton("+", new Vector2(ImGui.GetFrameHeight()), "按顺序选择下一个可用选项。",
                 currentIndex >= _currentCount - 1 || npc))
             UpdateValue(_set.Data(_currentIndex, currentIndex + 1, _customize.Face).Value);
         else
@@ -168,8 +168,8 @@ public partial class CustomizationDrawer
             UpdateValue((CustomizeValue)(newValue - 1));
         }
 
-        ImGuiUtil.HoverTooltip($"Input Range: [1, {_currentCount}]\n"
-          + "Hold Control to force updates with invalid/unknown options at your own risk.");
+        ImGuiUtil.HoverTooltip($"输入范围：[1, {_currentCount}]\n"
+          + "按住Ctrl键强制输入无效/未知参数，风险自负。");
     }
 
     private void ListCombo1()
@@ -202,7 +202,7 @@ public partial class CustomizationDrawer
         }
 
         ImGuiUtil.HoverTooltip($"Input Range: [1, {_currentCount}]\n"
-          + "Hold Control to force updates with invalid/unknown options at your own risk.");
+          + "按住Ctrl可使用无效/未知选项强制更新，风险自负。");
     }
 
     private static bool CaptureMouseWheel(ref int value, int offset, int cap)
@@ -266,14 +266,14 @@ public partial class CustomizationDrawer
 
     private void ApplyCheckbox()
     {
-        if (UiHelpers.DrawCheckbox("##apply", $"Apply the {_currentOption} customization in this design.", _currentApply, out _, _locked))
+        if (UiHelpers.DrawCheckbox("##apply", $"应用[{_currentOption}]到这个外貌设计。", _currentApply, out _, _locked))
             ToggleApply();
     }
 
     private void ApplyCheckbox(CustomizeIndex index)
     {
         SetId(index);
-        if (UiHelpers.DrawCheckbox("##apply", $"Apply the {_currentOption} customization in this design.", _currentApply, out _, _locked))
+        if (UiHelpers.DrawCheckbox("##apply", $"应用[{_currentOption}]到这个外貌设计。", _currentApply, out _, _locked))
             ToggleApply();
     }
 

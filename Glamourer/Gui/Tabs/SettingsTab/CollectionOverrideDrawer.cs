@@ -25,10 +25,10 @@ public class CollectionOverrideDrawer(
 
     public void Draw()
     {
-        using var header = ImRaii.CollapsingHeader("Collection Overrides");
+        using var header = ImRaii.CollapsingHeader("合集覆盖");
         ImGuiUtil.HoverTooltip(
-            "Here you can set up overrides for Penumbra collections that should have their settings changed when automatically applying mod settings from a design.\n"
-          + "Instead of the collection associated with the overridden character, the overridden collection will be manipulated.");
+            "在这里，您可以为Penumbra设置覆盖，当自动应用来自设计的模组设置时，这些合集中的设置应该被更改。\n"
+          + "将操作被覆盖的合集，而不是与被覆盖角色有关的合集。");
         if (!header)
             return;
 
@@ -84,7 +84,7 @@ public class CollectionOverrideDrawer(
 
         ImGui.TableNextColumn();
         ImGui.SetNextItemWidth(ImGui.GetContentRegionAvail().X - ImGui.GetStyle().ItemInnerSpacing.X - buttonSize.X * 2);
-        if (ImGui.InputTextWithHint("##newActor", "New Identifier...", ref _newIdentifier, 80))
+        if (ImGui.InputTextWithHint("##newActor", "新标识符...", ref _newIdentifier, 80))
             try
             {
                 _identifiers = actors.FromUserString(_newIdentifier, false);
@@ -117,6 +117,6 @@ public class CollectionOverrideDrawer(
 
         ImGui.TableNextColumn();
         ImGui.SetNextItemWidth(ImGui.GetContentRegionAvail().X);
-        ImGui.InputTextWithHint("##collection", "Enter Collection...", ref _collection, 80);
+        ImGui.InputTextWithHint("##collection", "输入合集...", ref _collection, 80);
     }
 }

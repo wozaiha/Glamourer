@@ -51,7 +51,7 @@ public partial class CustomizationDrawer
             DataInputInt(current, npc);
             if (_lockedRedraw && ImGui.IsItemHovered(ImGuiHoveredFlags.AllowWhenDisabled))
                 ImGui.SetTooltip(
-                    "The face can not be changed as this requires a redraw of the character, which is not supported for this actor.");
+                    "无法更改脸型，这需要重绘角色，而此角色不支持这个操作。");
 
             if (_withApply)
             {
@@ -97,7 +97,7 @@ public partial class CustomizationDrawer
                         _favorites.TryAdd(_set.Gender, _set.Clan, _currentIndex, custom.Value);
 
                 ImGuiUtil.HoverIconTooltip(icon, _iconSize,
-                    FavoriteManager.TypeAllowed(_currentIndex) ? "Right-Click to toggle favorite." : string.Empty);
+                    FavoriteManager.TypeAllowed(_currentIndex) ? "右键单击可切换收藏。" : string.Empty);
 
                 var text      = custom.Value.ToString();
                 var textWidth = ImGui.CalcTextSize(text).X;
@@ -170,7 +170,7 @@ public partial class CustomizationDrawer
         ImGui.AlignTextToFramePadding();
         using (var _ = ImRaii.Enabled())
         {
-            ImGui.TextUnformatted("Facial Features & Tattoos");
+            ImGui.TextUnformatted("面部特征 & 纹身");
         }
 
         if (_withApply)

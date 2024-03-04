@@ -102,7 +102,7 @@ public class MaterialDrawer(DesignManager _designManager, Configuration _config)
     {
         var deleteEnabled = _config.DeleteDesignModifier.IsActive();
         if (!ImGuiUtil.DrawDisabledButton(FontAwesomeIcon.Trash.ToIconString(), _buttonSize,
-                $"Delete this color row.{(deleteEnabled ? string.Empty : $"\nHold {_config.DeleteDesignModifier} to delete.")}",
+                $"删除此行颜色集。{(deleteEnabled ? string.Empty : $"\n按住{_config.DeleteDesignModifier}来删除。")}",
                 !deleteEnabled, true))
             return;
 
@@ -112,7 +112,7 @@ public class MaterialDrawer(DesignManager _designManager, Configuration _config)
 
     private void CopyButton(in ColorRow row)
     {
-        if (ImGuiUtil.DrawDisabledButton(FontAwesomeIcon.Clipboard.ToIconString(), _buttonSize, "Export this row to your clipboard.",
+        if (ImGuiUtil.DrawDisabledButton(FontAwesomeIcon.Clipboard.ToIconString(), _buttonSize, "将此行导出到剪贴板。",
                 false,
                 true))
             ColorRowClipboard.Row = row;
@@ -121,27 +121,27 @@ public class MaterialDrawer(DesignManager _designManager, Configuration _config)
     private void PasteButton(Design design, MaterialValueIndex index)
     {
         if (ImGuiUtil.DrawDisabledButton(FontAwesomeIcon.Paste.ToIconString(), _buttonSize,
-                "Import an exported row from your clipboard onto this row.", !ColorRowClipboard.IsSet, true))
+                "将导出的高级染色数据从剪贴板导入到此行。", !ColorRowClipboard.IsSet, true))
             _designManager.ChangeMaterialValue(design, index, ColorRowClipboard.Row);
     }
 
     private void EnabledToggle(Design design, MaterialValueIndex index, bool enabled)
     {
-        if (ImGui.Checkbox("Enabled", ref enabled))
+        if (ImGui.Checkbox("启用", ref enabled))
             _designManager.ChangeApplyMaterialValue(design, index, enabled);
     }
 
     private void RevertToggle(Design design, MaterialValueIndex index, bool revert)
     {
-        if (ImGui.Checkbox("Revert", ref revert))
+        if (ImGui.Checkbox("还原", ref revert))
             _designManager.ChangeMaterialRevert(design, index, revert);
         ImGuiUtil.HoverTooltip(
-            "If this is checked, Glamourer will try to revert the advanced dye row to its game state instead of applying a specific row.");
+            "如果选中此项，Glamourer将尝试将此行高级染色恢复到其游戏状态，不应用此行。");
     }
 
     public void DrawNew(Design design)
     {
-        if (EquipSlotCombo.Draw("##slot", "Choose a slot for an advanced dye row.", ref _newSlot))
+        if (EquipSlotCombo.Draw("##slot", "为高级染色选择一个装备类型。", ref _newSlot))
             _newKey = MaterialValueIndex.FromSlot(_newSlot) with
             {
                 MaterialIndex = (byte)_newMaterialIdx,
@@ -153,8 +153,8 @@ public class MaterialDrawer(DesignManager _designManager, Configuration _config)
         DrawRowIdxDrag();
         ImGui.SameLine(0, ImGui.GetStyle().ItemInnerSpacing.X);
         var exists = design.GetMaterialDataRef().TryGetValue(_newKey, out _);
-        if (ImGuiUtil.DrawDisabledButton("Add New Row", Vector2.Zero, 
-                exists ? "The selected advanced dye row already exists." : "Add the selected advanced dye row.", exists, false))
+        if (ImGuiUtil.DrawDisabledButton("添加一行", Vector2.Zero, 
+                exists ? "所选高级染色（执行集）已存在" : "添加一行高级染色（执行集）。", exists, false))
             _designManager.ChangeMaterialValue(design, _newKey, ColorRow.Empty);
     }
 
@@ -162,7 +162,7 @@ public class MaterialDrawer(DesignManager _designManager, Configuration _config)
     {
         _newMaterialIdx += 1;
         ImGui.SetNextItemWidth(ImGui.CalcTextSize("Material #000").X);
-        if (ImGui.DragInt("##Material", ref _newMaterialIdx, 0.01f, 1, MaterialService.MaterialsPerModel, "Material #%i"))
+        if (ImGui.DragInt("##Material", ref _newMaterialIdx, 0.01f, 1, MaterialService.MaterialsPerModel, "材质 #%i"))
         {
             _newMaterialIdx = Math.Clamp(_newMaterialIdx, 1, MaterialService.MaterialsPerModel);
             _newKey         = _newKey with { MaterialIndex = (byte)(_newMaterialIdx - 1) };
@@ -175,7 +175,7 @@ public class MaterialDrawer(DesignManager _designManager, Configuration _config)
     {
         _newRowIdx += 1;
         ImGui.SetNextItemWidth(ImGui.CalcTextSize("Row #0000").X);
-        if (ImGui.DragInt("##Row", ref _newRowIdx, 0.01f, 1, MtrlFile.ColorTable.NumRows, "Row #%i"))
+        if (ImGui.DragInt("##Row", ref _newRowIdx, 0.01f, 1, MtrlFile.ColorTable.NumRows, "行 #%i"))
         {
             _newRowIdx = Math.Clamp(_newRowIdx, 1, MtrlFile.ColorTable.NumRows);
             _newKey    = _newKey with { RowIndex = (byte)(_newRowIdx - 1) };
@@ -188,19 +188,19 @@ public class MaterialDrawer(DesignManager _designManager, Configuration _config)
     {
         var tmp = row;
         using var _ = ImRaii.Disabled(disabled);
-        var applied = ImGuiUtil.ColorPicker("##diffuse", "Change the diffuse value for this row.", row.Diffuse, v => tmp.Diffuse = v, "D");
+        var applied = ImGuiUtil.ColorPicker("##diffuse", "更改此行的漫反射值。", row.Diffuse, v => tmp.Diffuse = v, "D");
         ImGui.SameLine(0, _spacing);
-        applied |= ImGuiUtil.ColorPicker("##specular", "Change the specular value for this row.", row.Specular, v => tmp.Specular = v, "S");
+        applied |= ImGuiUtil.ColorPicker("##specular", "更改此行的镜面反射值。", row.Specular, v => tmp.Specular = v, "S");
         ImGui.SameLine(0, _spacing);
-        applied |= ImGuiUtil.ColorPicker("##emissive", "Change the emissive value for this row.", row.Emissive, v => tmp.Emissive = v, "E");
+        applied |= ImGuiUtil.ColorPicker("##emissive", "更改此行的发光值。", row.Emissive, v => tmp.Emissive = v, "E");
         ImGui.SameLine(0, _spacing);
         ImGui.SetNextItemWidth(GlossWidth * ImGuiHelpers.GlobalScale);
         applied |= ImGui.DragFloat("##Gloss", ref tmp.GlossStrength, 0.01f, 0.001f, float.MaxValue, "%.3f G");
-        ImGuiUtil.HoverTooltip("Change the gloss strength for this row.");
+        ImGuiUtil.HoverTooltip("更改此行的光泽强度。");
         ImGui.SameLine(0, _spacing);
         ImGui.SetNextItemWidth(SpecularStrengthWidth * ImGuiHelpers.GlobalScale);
         applied |= ImGui.DragFloat("##Specular Strength", ref tmp.SpecularStrength, 0.01f, float.MinValue, float.MaxValue, "%.3f SS");
-        ImGuiUtil.HoverTooltip("Change the specular strength for this row.");
+        ImGuiUtil.HoverTooltip("更改此行的镜面反射强度。");
         if (applied)
             _designManager.ChangeMaterialValue(design, index, tmp);
     }
