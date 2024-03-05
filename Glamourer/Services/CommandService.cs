@@ -61,7 +61,7 @@ public class CommandService : IDisposable
         _items             = items;
         _randomDesign      = randomDesign;
 
-        _commands.AddHandler(MainCommandString, new CommandInfo(OnGlamourer) { HelpMessage = "Open or close the Glamourer window." });
+        _commands.AddHandler(MainCommandString, new CommandInfo(OnGlamourer) { HelpMessage = "打开或关闭Glamourer窗口。" });
         _commands.AddHandler(ApplyCommandString,
             new CommandInfo(OnGlamour) { HelpMessage = "Use Glamourer Functions. Use with 'help' or '?' for extended help." });
     }

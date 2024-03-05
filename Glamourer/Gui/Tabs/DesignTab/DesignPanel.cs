@@ -169,7 +169,7 @@ public class DesignPanel(
         if (!_config.UseAdvancedParameters)
             return;
 
-        using var h = ImRaii.CollapsingHeader("外貌（高级）");
+        using var h = ImRaii.CollapsingHeader("外貌（高级）- 调色板");
         if (!h)
             return;
 
@@ -181,7 +181,7 @@ public class DesignPanel(
         if (!_config.UseAdvancedDyes)
             return;
 
-        using var h = ImRaii.CollapsingHeader("染色（高级）");
+        using var h = ImRaii.CollapsingHeader("染色（高级）- 颜色集");
         if (!h)
             return;
 
@@ -223,13 +223,13 @@ public class DesignPanel(
 
     private void DrawCrestApplication()
     {
-        using var id        = ImRaii.PushId("Crests");
+        using var id        = ImRaii.PushId("徽章");
         var       flags     = (uint)_selector.Selected!.ApplyCrest;
-        var       bigChange = ImGui.CheckboxFlags("Apply All Crests", ref flags, (uint)CrestExtensions.AllRelevant);
+        var       bigChange = ImGui.CheckboxFlags("应用所有徽章", ref flags, (uint)CrestExtensions.AllRelevant);
         foreach (var flag in CrestExtensions.AllRelevantSet)
         {
             var apply = bigChange ? ((CrestFlag)flags & flag) == flag : _selector.Selected!.DoApplyCrest(flag);
-            if (ImGui.Checkbox($"Apply {flag.ToLabel()} Crest", ref apply) || bigChange)
+            if (ImGui.Checkbox($"应用{flag.ToLabel()}徽章", ref apply) || bigChange)
                 _manager.ChangeApplyCrest(_selector.Selected!, flag, apply);
         }
     }

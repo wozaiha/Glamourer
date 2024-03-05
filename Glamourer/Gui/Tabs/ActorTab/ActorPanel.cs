@@ -178,7 +178,7 @@ public class ActorPanel(
         if (!_config.UseAdvancedParameters)
             return;
 
-        using var h = ImRaii.CollapsingHeader("外貌（高级）");
+        using var h = ImRaii.CollapsingHeader("外貌（高级）- 调色板");
         if (!h)
             return;
 

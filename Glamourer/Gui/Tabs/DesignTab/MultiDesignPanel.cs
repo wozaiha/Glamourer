@@ -95,8 +95,8 @@ public class MultiDesignPanel(DesignFileSystemSelector _selector, DesignManager 
 
         UpdateTagCache();
         var label = _addDesigns.Count > 0
-            ? $"Add to {_addDesigns.Count} Designs"
-            : "Add";
+            ? $"添加到{_addDesigns.Count}个设计"
+            : "添加";
         var tooltip = _addDesigns.Count == 0
             ? _tag.Length == 0
                 ? "未指定标签。"
@@ -108,8 +108,8 @@ public class MultiDesignPanel(DesignFileSystemSelector _selector, DesignManager 
                 _editor.AddTag(design, _tag);
 
         label = _removeDesigns.Count > 0
-            ? $"Remove from {_removeDesigns.Count} Designs"
-            : "Remove";
+            ? $"从{_removeDesigns.Count}个设计移除"
+            : "移除";
         tooltip = _removeDesigns.Count == 0
             ? _tag.Length == 0
                 ? "未指定标签。"

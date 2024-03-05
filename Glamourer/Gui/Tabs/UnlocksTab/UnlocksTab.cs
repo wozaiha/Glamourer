@@ -78,7 +78,7 @@ public class UnlocksTab : Window, ITab
         {
             ImGui.SameLine();
             if (ImGuiUtil.DrawDisabledButton(FontAwesomeIcon.Expand.ToIconString(), new Vector2(ImGui.GetFrameHeight()),
-                    "Restore all columns to their original size.", false, true))
+                    "将所有列恢复到其原始大小。", false, true))
                 _table.Flags &= ~ImGuiTableFlags.Resizable;
         }
 

@@ -50,11 +50,11 @@ public static class MetaExtensions
     public static string ToName(this MetaIndex index)
         => index switch
         {
-            MetaIndex.HatState    => "Hat Visible",
-            MetaIndex.VisorState  => "Visor Toggled",
-            MetaIndex.WeaponState => "Weapon Visible",
-            MetaIndex.Wetness     => "Force Wetness",
-            _                     => "Unknown Meta",
+            MetaIndex.HatState    => "显示头部装备",
+            MetaIndex.VisorState  => "调整头部装备",
+            MetaIndex.WeaponState => "收回武器时显示主手及副手",
+            MetaIndex.Wetness     => "强制湿身",
+            _                     => "未知元数据",
         };
 
     public static string ToTooltip(this MetaIndex index)

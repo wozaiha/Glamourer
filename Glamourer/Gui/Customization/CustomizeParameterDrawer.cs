@@ -199,7 +199,7 @@ public class CustomizeParameterDrawer(Configuration config, PaletteImport import
         }
 
         if (noHighlights)
-            ImGuiUtil.HoverTooltip("挑染在“外貌”选项中中被禁用，需要使用请去“外貌”中启用。", ImGuiHoveredFlags.AllowWhenDisabled);
+            ImGuiUtil.HoverTooltip("挑染在“外貌”选项中被禁用，需要使用请去“外貌”中启用。", ImGuiHoveredFlags.AllowWhenDisabled);
 
         DrawRevert(data);
 

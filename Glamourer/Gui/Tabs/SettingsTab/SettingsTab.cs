@@ -199,8 +199,8 @@ public class SettingsTab(
         }
 
         if (config.UseAdvancedDyes)
-            Checkbox("Keep Advanced Dye Window Attached",
-                "Keeps the advanced dye window expansion attached to the main window, or makes it freely movable.",
+            Checkbox("高级染色窗口吸附",
+                "保持高级染色窗口与主窗口吸附，取消勾选使其可自由移动。",
                 config.KeepAdvancedDyesAttached, v => config.KeepAdvancedDyesAttached = v);
 
         Checkbox("调试模式", "显示调试选项卡，仅对调试和进阶用法有帮助。一般不建议使用。", config.DebugMode,
