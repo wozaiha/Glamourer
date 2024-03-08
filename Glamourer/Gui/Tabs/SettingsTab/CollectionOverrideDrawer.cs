@@ -46,7 +46,7 @@ public class CollectionOverrideDrawer(
             var (identifier, collection) = collectionOverrides.Overrides[i];
             using var id = ImRaii.PushId(i);
             ImGui.TableNextColumn();
-            if (ImGuiUtil.DrawDisabledButton(FontAwesomeIcon.Trash.ToIconString(), buttonSize, "Delete this override.", false, true))
+            if (ImGuiUtil.DrawDisabledButton(FontAwesomeIcon.Trash.ToIconString(), buttonSize, "删除此覆盖。", false, true))
                 collectionOverrides.DeleteOverride(i--);
 
             ImGui.TableNextColumn();
@@ -66,7 +66,7 @@ public class CollectionOverrideDrawer(
                 if (source)
                 {
                     ImGui.SetDragDropPayload("DraggingOverride", nint.Zero, 0);
-                    ImGui.TextUnformatted($"Reordering Override #{i + 1}...");
+                    ImGui.TextUnformatted($"重新排序覆盖 #{i + 1}...");
                     _dragDropIndex = i;
                 }
             }
@@ -78,7 +78,7 @@ public class CollectionOverrideDrawer(
         }
 
         ImGui.TableNextColumn();
-        if (ImGuiUtil.DrawDisabledButton(FontAwesomeIcon.PersonCirclePlus.ToIconString(), buttonSize, "Add override for current player.",
+        if (ImGuiUtil.DrawDisabledButton(FontAwesomeIcon.PersonCirclePlus.ToIconString(), buttonSize, "为当前玩家添加覆盖。",
                 !objects.Player.Valid, true))
             collectionOverrides.AddOverride([objects.PlayerData.Identifier], _collection.Length > 0 ? _collection : "TempCollection");
 
@@ -96,10 +96,10 @@ public class CollectionOverrideDrawer(
             }
 
         var tt = _identifiers.Any(i => i.IsValid)
-            ? $"Add a new override for {_identifiers.First(i => i.IsValid)}."
+            ? $"为[{_identifiers.First(i => i.IsValid)}]添加新的覆盖"
             : _newIdentifier.Length == 0
-                ? "Please enter an identifier string first."
-                : $"The identifier string {_newIdentifier} does not result in a valid identifier{(_exception == null ? "." : $":\n\n{_exception?.Message}")}";
+                ? "请先输入标识符字符串。"
+                : $"此标字符串[{_newIdentifier}]不是有效的标识符。{(_exception == null ? "." : $":\n\n{_exception?.Message}")}";
 
         ImGui.SameLine(0, ImGui.GetStyle().ItemInnerSpacing.X);
         if (ImGuiUtil.DrawDisabledButton(FontAwesomeIcon.Plus.ToIconString(), buttonSize, tt, tt[0] is 'T', true))

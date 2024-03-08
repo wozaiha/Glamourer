@@ -223,13 +223,13 @@ public class DesignPanel(
 
     private void DrawCrestApplication()
     {
-        using var id        = ImRaii.PushId("徽章");
+        using var id        = ImRaii.PushId("队徽");
         var       flags     = (uint)_selector.Selected!.ApplyCrest;
-        var       bigChange = ImGui.CheckboxFlags("应用所有徽章", ref flags, (uint)CrestExtensions.AllRelevant);
+        var       bigChange = ImGui.CheckboxFlags("应用所有队徽", ref flags, (uint)CrestExtensions.AllRelevant);
         foreach (var flag in CrestExtensions.AllRelevantSet)
         {
             var apply = bigChange ? ((CrestFlag)flags & flag) == flag : _selector.Selected!.DoApplyCrest(flag);
-            if (ImGui.Checkbox($"应用{flag.ToLabel()}徽章", ref apply) || bigChange)
+            if (ImGui.Checkbox($"应用{flag.ToLabel()}队徽", ref apply) || bigChange)
                 _manager.ChangeApplyCrest(_selector.Selected!, flag, apply);
         }
     }

@@ -24,7 +24,7 @@ public static class ApplicationTypeExtensions
             "应用此设计中启用的所有外貌修改，这些修改须在自动执行中有效，并适用于指定的种族和性别。"),
         (ApplicationType.Armor, "应用此设计中启用的所有服装修改，这些修改须在自动执行中有效。"),
         (ApplicationType.Accessories, "应用此设计中启用的所有饰品修改，这些修改须在自动执行中有效。"),
-        (ApplicationType.GearCustomization, "应用此设计中启用的所有染色和徽章修改"),
+        (ApplicationType.GearCustomization, "应用此设计中启用的所有染色和队徽修改"),
         (ApplicationType.Weapons, "应用此设计中启用的所有武器修改，须符合当前职业，否则不生效。"),
     ];
 

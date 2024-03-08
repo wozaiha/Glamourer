@@ -177,7 +177,7 @@ public sealed class PenumbraChangedItemTooltip : IDisposable
 
                 var customize = _objects.Player.Model.GetCustomize();
                 if (CheckGenderRace(customize, race, gender) && VerifyValue(customize, index, value))
-                    ImGui.TextUnformatted("[Glamourer] Right-Click to apply to current actor.");
+                    ImGui.TextUnformatted("[Glamourer] 右键单击应用到当前角色。");
 
                 return;
         }

@@ -224,7 +224,7 @@ public class ActorPanel(
         }
 
         ImGui.Separator();
-        ImGui.TextUnformatted("Customization Data");
+        ImGui.TextUnformatted("外貌数据");
         using (_ = ImRaii.PushFont(UiBuilder.MonoFont))
         {
             foreach (var b in _state.ModelData.Customize)
@@ -245,7 +245,7 @@ public class ActorPanel(
         }
 
         ImGui.Separator();
-        ImGui.TextUnformatted("Equipment Data");
+        ImGui.TextUnformatted("装备数据");
         using (_ = ImRaii.PushFont(UiBuilder.MonoFont))
         {
             foreach (var b in _state.ModelData.GetEquipmentBytes())

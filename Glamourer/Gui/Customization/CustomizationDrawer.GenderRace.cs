@@ -29,7 +29,7 @@ public partial class CustomizationDrawer
         }
 
         ImGui.AlignTextToFramePadding();
-        ImGui.TextUnformatted("Gender & Clan");
+        ImGui.TextUnformatted("性别 & 部族");
     }
 
     private void DrawGenderSelector()
