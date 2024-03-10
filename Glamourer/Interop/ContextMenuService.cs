@@ -53,7 +53,7 @@ public class ContextMenuService : IDisposable
     }
 
     private static readonly SeString TryOnString = new SeStringBuilder().AddUiForeground(SeIconChar.BoxedLetterG.ToIconString(), 541)
-        .AddText(" Try On").AddUiForegroundOff().BuiltString;
+        .AddText(" 试穿").AddUiForegroundOff().BuiltString;
 
     private void AddInventoryItem(InventoryContextMenuOpenArgs args)
     {
