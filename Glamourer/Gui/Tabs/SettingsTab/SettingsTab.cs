@@ -66,7 +66,7 @@ public class SettingsTab(
 
     private void DrawBehaviorSettings()
     {
-        if (!ImGui.CollapsingHeader("特性"))
+        if (!ImGui.CollapsingHeader("特性设置"))
             return;
 
         Checkbox("总是为主手应用整套武器",
@@ -107,7 +107,7 @@ public class SettingsTab(
 
     private void DrawInterfaceSettings()
     {
-        if (!ImGui.CollapsingHeader("界面"))
+        if (!ImGui.CollapsingHeader("界面设置"))
             return;
 
         EphemeralCheckbox("显示快速设计栏",
@@ -271,7 +271,7 @@ public class SettingsTab(
     /// <summary> Draw the entire Color subsection. </summary>
     private void DrawColorSettings()
     {
-        if (!ImGui.CollapsingHeader("配色"))
+        if (!ImGui.CollapsingHeader("配色设置"))
             return;
 
         using (var tree = ImRaii.TreeNode("自定义设计颜色"))
@@ -280,7 +280,7 @@ public class SettingsTab(
                 designColorUi.Draw();
         }
 
-        using (var tree = ImRaii.TreeNode("配色设置"))
+        using (var tree = ImRaii.TreeNode("配色"))
         {
             if (tree)
                 foreach (var color in Enum.GetValues<ColorId>())
@@ -300,7 +300,7 @@ public class SettingsTab(
         const string tooltip =
             "作弊代码实际上不是针对游戏内容的作弊，而是对Glamourer的“作弊”。它们会实现一些有趣的彩蛋，比如以某种方式改变你看到的所有玩家（包括你自己）的外观。\n\n"
           + "作弊代码一般是一些参考自流行文化的词语，但你不太可能猜出来。有些代码已经发布到了Discord服务器上，其它的代码我们还没有决定在何时以什么方法发布和添加。也许有些代码会隐藏在更新日志或帮助页面中。或者我稍后在这里添加提示。\n\n"
-          + "无论如何，如果你没注意到这里，或者没有寻宝的兴趣，你不会失去任何重要的东西。添加这些内容，仅仅因为对我来说很有趣。";
+          + "无论如何，如果你没注意到这里，或者没有探秘的兴趣，你不会失去任何重要的东西。添加这些内容，仅仅因为对我来说很有趣。";
 
         var show = ImGui.CollapsingHeader("作弊代码");
         if (ImGui.IsItemHovered())

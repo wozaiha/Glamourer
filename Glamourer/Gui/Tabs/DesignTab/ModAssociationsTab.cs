@@ -111,7 +111,7 @@ public class ModAssociationsTab
 
         ImGui.TableNextColumn();
         ImGuiUtil.DrawDisabledButton(FontAwesomeIcon.RedoAlt.ToIconString(), new Vector2(ImGui.GetFrameHeight()),
-            "Update the settings of this mod association", false, true);
+            "更新此关联模组当前的设置", false, true);
         
         if (ImGui.IsItemHovered())
         {
@@ -128,8 +128,8 @@ public class ModAssociationsTab
             {
                 if (namesDifferent)
                     ImGui.TextUnformatted("Directory Name");
-                ImGui.TextUnformatted("Enabled");
-                ImGui.TextUnformatted("Priority");
+                ImGui.TextUnformatted("已启用");
+                ImGui.TextUnformatted("优先级");
                 ModCombo.DrawSettingsLeft(newSettings);
             }
 
