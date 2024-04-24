@@ -1,10 +1,9 @@
 ﻿using Dalamud.Hooking;
 using Dalamud.Plugin.Services;
-using Dalamud.Utility.Signatures;
 using FFXIVClientStructs.FFXIV.Client.Graphics.Scene;
 using Glamourer.Events;
-using Glamourer.Interop.Structs;
 using Penumbra.GameData.Enums;
+using Penumbra.GameData.Interop;
 
 namespace Glamourer.Interop;
 
@@ -53,7 +52,7 @@ public class VisorService : IDisposable
         var originalOn = on;
         // Invoke an event that can change the requested value
         // and also control whether the function should be called at all.
-        Event.Invoke(human, ref on);
+        Event.Invoke(human, false, ref on);
 
         Glamourer.Log.Excessive(
             $"[SetVisorState] Invoked from game on 0x{human:X} switching to {on} (original {originalOn}).");

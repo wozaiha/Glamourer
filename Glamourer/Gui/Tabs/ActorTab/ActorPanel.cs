@@ -18,25 +18,73 @@ using OtterGui.Raii;
 using Penumbra.GameData.Actors;
 using Penumbra.GameData.DataContainers;
 using Penumbra.GameData.Enums;
+using Penumbra.GameData.Interop;
+using ObjectManager = Glamourer.Interop.ObjectManager;
 
 namespace Glamourer.Gui.Tabs.ActorTab;
 
-public class ActorPanel(
-    ActorSelector _selector,
-    StateManager _stateManager,
-    CustomizationDrawer _customizationDrawer,
-    EquipmentDrawer _equipmentDrawer,
-    AutoDesignApplier _autoDesignApplier,
-    Configuration _config,
-    DesignConverter _converter,
-    ObjectManager _objects,
-    DesignManager _designManager,
-    ImportService _importService,
-    ICondition _conditions,
-    DictModelChara _modelChara,
-    CustomizeParameterDrawer _parameterDrawer,
-    AdvancedDyePopup _advancedDyes)
+public class ActorPanel
 {
+    private readonly ActorSelector            _selector;
+    private readonly StateManager             _stateManager;
+    private readonly CustomizationDrawer      _customizationDrawer;
+    private readonly EquipmentDrawer          _equipmentDrawer;
+    private readonly AutoDesignApplier        _autoDesignApplier;
+    private readonly Configuration            _config;
+    private readonly DesignConverter          _converter;
+    private readonly ObjectManager            _objects;
+    private readonly DesignManager            _designManager;
+    private readonly ImportService            _importService;
+    private readonly ICondition               _conditions;
+    private readonly DictModelChara           _modelChara;
+    private readonly CustomizeParameterDrawer _parameterDrawer;
+    private readonly AdvancedDyePopup         _advancedDyes;
+    private readonly HeaderDrawer.Button[]   _leftButtons;
+    private readonly HeaderDrawer.Button[]   _rightButtons;
+
+    public ActorPanel(ActorSelector selector,
+        StateManager stateManager,
+        CustomizationDrawer customizationDrawer,
+        EquipmentDrawer equipmentDrawer,
+        AutoDesignApplier autoDesignApplier,
+        Configuration config,
+        DesignConverter converter,
+        ObjectManager objects,
+        DesignManager designManager,
+        ImportService importService,
+        ICondition conditions,
+        DictModelChara modelChara,
+        CustomizeParameterDrawer parameterDrawer,
+        AdvancedDyePopup advancedDyes)
+    {
+        _selector            = selector;
+        _stateManager        = stateManager;
+        _customizationDrawer = customizationDrawer;
+        _equipmentDrawer     = equipmentDrawer;
+        _autoDesignApplier   = autoDesignApplier;
+        _config              = config;
+        _converter           = converter;
+        _objects             = objects;
+        _designManager       = designManager;
+        _importService       = importService;
+        _conditions          = conditions;
+        _modelChara          = modelChara;
+        _parameterDrawer     = parameterDrawer;
+        _advancedDyes        = advancedDyes;
+        _leftButtons =
+        [
+            new SetFromClipboardButton(this),
+            new ExportToClipboardButton(this),
+            new SaveAsDesignButton(this),
+        ];
+        _rightButtons =
+        [
+            new LockedButton(this),
+            new HeaderDrawer.IncognitoButton(_config.Ephemeral),
+        ];
+    }
+
+
     private ActorIdentifier _identifier;
     private string          _actorName = string.Empty;
     private Actor           _actor     = Actor.Null;
@@ -81,9 +129,7 @@ public class ActorPanel(
     {
         var textColor = !_identifier.IsValid ? ImGui.GetColorU32(ImGuiCol.Text) :
             _data.Valid                      ? ColorId.ActorAvailable.Value() : ColorId.ActorUnavailable.Value();
-        HeaderDrawer.Draw(_actorName, textColor, ImGui.GetColorU32(ImGuiCol.FrameBg),
-            3, SetFromClipboardButton(), ExportToClipboardButton(), SaveAsDesignButton(), LockedButton(),
-            HeaderDrawer.Button.IncognitoButton(_selector.IncognitoMode, v => _selector.IncognitoMode = v));
+        HeaderDrawer.Draw(_actorName, textColor, ImGui.GetColorU32(ImGuiCol.FrameBg), _leftButtons, _rightButtons);
 
         SaveDesignDrawPopup();
     }
@@ -178,7 +224,7 @@ public class ActorPanel(
         if (!_config.UseAdvancedParameters)
             return;
 
-        using var h = ImRaii.CollapsingHeader("外貌（高级）- 调色板");
+        using var h = ImRaii.CollapsingHeader("外貌（高级）- 调色盘");
         if (!h)
             return;
 
@@ -269,58 +315,8 @@ public class ActorPanel(
             _stateManager.TurnHuman(_state, StateSource.Manual);
     }
 
-    private HeaderDrawer.Button SetFromClipboardButton()
-        => new()
-        {
-            Description =
-                "尝试应用剪贴板中的设计。\n按住CTRL仅应用装备。\n按住Shift仅应用外貌。",
-            Icon     = FontAwesomeIcon.Clipboard,
-            OnClick  = SetFromClipboard,
-            Visible  = _state != null,
-            Disabled = _state?.IsLocked ?? true,
-        };
-
-    private HeaderDrawer.Button ExportToClipboardButton()
-        => new()
-        {
-            Description =
-                "复制当前设计到剪贴板。\n按住CTRL不复制外貌。\n按住Shift不复制装备。",
-            Icon    = FontAwesomeIcon.Copy,
-            OnClick = ExportToClipboard,
-            Visible = _state?.ModelData.ModelId == 0,
-        };
-
-    private HeaderDrawer.Button SaveAsDesignButton()
-        => new()
-        {
-            Description =
-                "将当前状态保存到“角色设计”。\n按住CTRL不保存外貌。\n按住Shift不保存装备。",
-            Icon    = FontAwesomeIcon.Save,
-            OnClick = SaveDesignOpen,
-            Visible = _state?.ModelData.ModelId == 0,
-        };
-
-    private HeaderDrawer.Button LockedButton()
-        => new()
-        {
-            Description = "此角色的当前状态已被外部工具锁定。",
-            Icon        = FontAwesomeIcon.Lock,
-            OnClick     = () => { },
-            Disabled    = true,
-            Visible     = _state?.IsLocked ?? false,
-            TextColor   = ColorId.ActorUnavailable.Value(),
-            BorderColor = ColorId.ActorUnavailable.Value(),
-        };
-
     private string      _newName = string.Empty;
     private DesignBase? _newDesign;
-
-    private void SaveDesignOpen()
-    {
-        ImGui.OpenPopup("保存为设计");
-        _newName   = _state!.Identifier.ToName();
-        _newDesign = _converter.Convert(_state, ApplicationRules.FromModifiers(_state));
-    }
 
     private void SaveDesignDrawPopup()
     {
@@ -333,37 +329,6 @@ public class ActorPanel(
         _newName   = string.Empty;
     }
 
-    private void SetFromClipboard()
-    {
-        try
-        {
-            var (applyGear, applyCustomize) = UiHelpers.ConvertKeysToBool();
-            var text = ImGui.GetClipboardText();
-            var design = _converter.FromBase64(text, applyCustomize, applyGear, out _)
-             ?? throw new Exception("The clipboard did not contain valid data.");
-            _stateManager.ApplyDesign(_state!, design, ApplySettings.ManualWithLinks);
-        }
-        catch (Exception ex)
-        {
-            Glamourer.Messager.NotificationMessage(ex, $"Could not apply clipboard to {_identifier}.",
-                $"Could not apply clipboard to design {_identifier.Incognito(null)}", NotificationType.Error, false);
-        }
-    }
-
-    private void ExportToClipboard()
-    {
-        try
-        {
-            var text = _converter.ShareBase64(_state!, ApplicationRules.FromModifiers(_state!));
-            ImGui.SetClipboardText(text);
-        }
-        catch (Exception ex)
-        {
-            Glamourer.Messager.NotificationMessage(ex, $"Could not copy {_identifier} data to clipboard.",
-                $"Could not copy data from design {_identifier.Incognito(null)} to clipboard", NotificationType.Error);
-        }
-    }
-
     private void RevertButtons()
     {
         if (ImGuiUtil.DrawDisabledButton("恢复游戏状态", Vector2.Zero, "恢复角色到游戏中的真实状态。",
@@ -371,18 +336,29 @@ public class ActorPanel(
             _stateManager.ResetState(_state!, StateSource.Manual);
 
         ImGui.SameLine();
-        if (ImGuiUtil.DrawDisabledButton("重新应用状态", Vector2.Zero, "如果出现问题，尝试重新应用配置中的状态。",
-                _state!.IsLocked))
+
+        if (ImGuiUtil.DrawDisabledButton("重新应用自动执行", Vector2.Zero,
+                "在角色的当前状态基础上重新应用角色的当前自动执行状态。",
+                !_config.EnableAutoDesigns || _state!.IsLocked))
+        {
+            _autoDesignApplier.ReapplyAutomation(_actor, _identifier, _state!, false);
             _stateManager.ReapplyState(_actor, StateSource.Manual);
+        }
 
         ImGui.SameLine();
-        if (ImGuiUtil.DrawDisabledButton("重新应用自动执行", Vector2.Zero,
+        if (ImGuiUtil.DrawDisabledButton("恢复到自动执行", Vector2.Zero,
                 "尝试将角色恢复到自动执行中设计的状态。",
                 !_config.EnableAutoDesigns || _state!.IsLocked))
         {
-            _autoDesignApplier.ReapplyAutomation(_actor, _identifier, _state!);
+            _autoDesignApplier.ReapplyAutomation(_actor, _identifier, _state!, true);
             _stateManager.ReapplyState(_actor, StateSource.Manual);
         }
+
+        ImGui.SameLine();
+        if (ImGuiUtil.DrawDisabledButton("重新应用", Vector2.Zero,
+                "如果感觉有什么出现了问题，那就尝试重新应用已配置的状态。一般情况下应该不需要这样做。",
+                _state!.IsLocked))
+            _stateManager.ReapplyState(_actor, StateSource.Manual);
     }
 
     private void DrawApplyToSelf()
@@ -413,5 +389,108 @@ public class ActorPanel(
         if (_stateManager.GetOrCreate(id, data.Objects[0], out var state))
             _stateManager.ApplyDesign(state, _converter.Convert(_state!, ApplicationRules.FromModifiers(_state!)),
                 ApplySettings.Manual);
+    }
+
+
+    private sealed class SetFromClipboardButton(ActorPanel panel)
+        : HeaderDrawer.Button
+    {
+        protected override string Description
+            => "尝试应用剪贴板中的设计。\n按住CTRL仅应用装备。\n按住Shift仅应用外貌。";
+
+        protected override FontAwesomeIcon Icon
+            => FontAwesomeIcon.Clipboard;
+
+        public override bool Visible
+            => panel._state != null;
+
+        protected override bool Disabled
+            => panel._state?.IsLocked ?? true;
+
+        protected override void OnClick()
+        {
+            try
+            {
+                var (applyGear, applyCustomize) = UiHelpers.ConvertKeysToBool();
+                var text = ImGui.GetClipboardText();
+                var design = panel._converter.FromBase64(text, applyCustomize, applyGear, out _)
+                 ?? throw new Exception("剪贴板不包含有效数据。");
+                panel._stateManager.ApplyDesign(panel._state!, design, ApplySettings.ManualWithLinks);
+            }
+            catch (Exception ex)
+            {
+                Glamourer.Messager.NotificationMessage(ex, $"无法将剪贴板应用于 {panel._identifier}.",
+                    $"无法将剪贴板应用于设计 {panel._identifier.Incognito(null)}", NotificationType.Error, false);
+            }
+        }
+    }
+
+    private sealed class ExportToClipboardButton(ActorPanel panel) : HeaderDrawer.Button
+    {
+        protected override string Description
+            => "复制当前设计到剪贴板。\n按住CTRL不复制外貌。\n按住Shift不复制装备。";
+
+        protected override FontAwesomeIcon Icon
+            => FontAwesomeIcon.Copy;
+
+        public override bool Visible
+            => panel._state?.ModelData.ModelId == 0;
+
+        protected override void OnClick()
+        {
+            try
+            {
+                var text = panel._converter.ShareBase64(panel._state!, ApplicationRules.FromModifiers(panel._state!));
+                ImGui.SetClipboardText(text);
+            }
+            catch (Exception ex)
+            {
+                Glamourer.Messager.NotificationMessage(ex, $"无法复制 {panel._identifier} 的数据到剪贴板。",
+                    $"无法复制设计 {panel._identifier.Incognito(null)} 的数据到剪贴板。", NotificationType.Error);
+            }
+        }
+    }
+
+    private sealed class SaveAsDesignButton(ActorPanel panel) : HeaderDrawer.Button
+    {
+        protected override string Description
+            => "将当前状态保存到“角色设计”。\n按住CTRL不保存外貌。\n按住Shift不保存装备。";
+
+        protected override FontAwesomeIcon Icon
+            => FontAwesomeIcon.Save;
+
+        public override bool Visible
+            => panel._state?.ModelData.ModelId == 0;
+
+        protected override void OnClick()
+        {
+            ImGui.OpenPopup("保存为设计");
+            panel._newName   = panel._state!.Identifier.ToName();
+            panel._newDesign = panel._converter.Convert(panel._state, ApplicationRules.FromModifiers(panel._state));
+        }
+    }
+
+    private sealed class LockedButton(ActorPanel panel) : HeaderDrawer.Button
+    {
+        protected override string Description
+            => "此角色的当前状态已被外部工具锁定。";
+
+        protected override FontAwesomeIcon Icon
+            => FontAwesomeIcon.Lock;
+
+        public override bool Visible
+            => panel._state?.IsLocked ?? false;
+
+        protected override bool Disabled
+            => true;
+
+        protected override uint BorderColor
+            => ColorId.ActorUnavailable.Value();
+
+        protected override uint TextColor
+            => ColorId.ActorUnavailable.Value();
+
+        protected override void OnClick()
+        { }
     }
 }

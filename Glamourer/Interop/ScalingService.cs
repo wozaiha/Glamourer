@@ -3,7 +3,7 @@ using Dalamud.Hooking;
 using Dalamud.Plugin.Services;
 using Dalamud.Utility.Signatures;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
-using Glamourer.Interop.Structs;
+using Penumbra.GameData.Interop;
 using Character = FFXIVClientStructs.FFXIV.Client.Game.Character.Character;
 
 namespace Glamourer.Interop;
@@ -100,7 +100,7 @@ public unsafe class ScalingService : IDisposable
 
     /// <summary> We do not change the Customize gender because the functions use the GetGender() vfunc, which uses the game objects gender value. </summary>
     private static (byte Race, byte Clan, byte Gender) GetScaleRelevantCustomize(Character* character)
-        => (character->DrawData.CustomizeData.Race, character->DrawData.CustomizeData.Clan, character->GameObject.Gender);
+        => (character->DrawData.CustomizeData.Race, character->DrawData.CustomizeData.Clan, character->GameObject.Gender);//国际服6.58hotfix后，Clan改Tribe，Gender改Sex
 
     private static (byte Gender, byte BodyType, byte Clan, byte Height) GetHeightRelevantCustomize(Character* character)
         => (character->DrawData.CustomizeData.Sex, character->DrawData.CustomizeData.BodyType,
@@ -138,7 +138,7 @@ public unsafe class ScalingService : IDisposable
     {
         character->DrawData.CustomizeData.Sex                              = gender;
         character->DrawData.CustomizeData.BodyType                         = bodyType;
-        character->DrawData.CustomizeData.Clan                             = clan;
+        character->DrawData.CustomizeData.Clan                            = clan;
         character->DrawData.CustomizeData.Data[(int)CustomizeIndex.Height] = height;
     }
 }

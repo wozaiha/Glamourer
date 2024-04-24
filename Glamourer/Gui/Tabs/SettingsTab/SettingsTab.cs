@@ -212,7 +212,7 @@ public class SettingsTab(
     {
         var showAuto     = config.EnableAutoDesigns;
         var showAdvanced = config.UseAdvancedParameters || config.UseAdvancedDyes;
-        var numColumns   = 6 - (showAuto ? 0 : 1) - (showAdvanced ? 0 : 1);
+        var numColumns   = 7 - (showAuto ? 0 : 2) - (showAdvanced ? 0 : 1);
         ImGui.NewLine();
         ImGui.TextUnformatted("在快速设计栏中显示以下按钮：");
         ImGui.Dummy(Vector2.Zero);
@@ -226,6 +226,7 @@ public class SettingsTab(
             (" 应用设计 ", true, QdbButtons.ApplyDesign),
             (" 全部还原 ", true, QdbButtons.RevertAll),
             (" 恢复自动 ", showAuto, QdbButtons.RevertAutomation),
+            (" 重新应用自动 ", showAuto, QdbButtons.ReapplyAutomation),
             (" 还原装备 ", true, QdbButtons.RevertEquip),
             (" 还原外貌 ", true, QdbButtons.RevertCustomize),
             (" 还原高级选项 ", showAdvanced, QdbButtons.RevertAdvanced),

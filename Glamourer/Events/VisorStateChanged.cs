@@ -1,5 +1,5 @@
-using Glamourer.Interop.Structs;
 using OtterGui.Classes;
+using Penumbra.GameData.Interop;
 
 namespace Glamourer.Events;
 
@@ -12,7 +12,7 @@ namespace Glamourer.Events;
 /// </list>
 /// </summary>
 public sealed class VisorStateChanged()
-    : EventWrapperRef2<Model, bool, VisorStateChanged.Priority>(nameof(VisorStateChanged))
+    : EventWrapperRef3<Model, bool, bool, VisorStateChanged.Priority>(nameof(VisorStateChanged))
 {
     public enum Priority
     {

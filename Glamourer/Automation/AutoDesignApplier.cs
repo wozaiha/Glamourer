@@ -5,12 +5,13 @@ using Glamourer.Designs.Links;
 using Glamourer.Events;
 using Glamourer.Interop;
 using Glamourer.Interop.Material;
-using Glamourer.Interop.Structs;
 using Glamourer.State;
 using Penumbra.GameData.Actors;
 using Penumbra.GameData.DataContainers;
 using Penumbra.GameData.Enums;
+using Penumbra.GameData.Interop;
 using Penumbra.GameData.Structs;
+using ObjectManager = Glamourer.Interop.ObjectManager;
 
 namespace Glamourer.Automation;
 
@@ -76,7 +77,7 @@ public sealed class AutoDesignApplier : IDisposable
             {
                 case EquipSlot.MainHand:
                 {
-                    if (_jobChangeState.TryGetValue(current.Type, out var data))
+                    if (_jobChangeState.TryGetValue(current.Type, actor.Job, out var data))
                     {
                         Glamourer.Log.Verbose(
                             $"Changing Mainhand from {state.ModelData.Weapon(EquipSlot.MainHand)} | {state.BaseData.Weapon(EquipSlot.MainHand)} to {data.Item1} for 0x{actor.Address:X}.");
@@ -88,7 +89,7 @@ public sealed class AutoDesignApplier : IDisposable
                 }
                 case EquipSlot.OffHand when current.Type == state.BaseData.MainhandType.Offhand():
                 {
-                    if (_jobChangeState.TryGetValue(current.Type, out var data))
+                    if (_jobChangeState.TryGetValue(current.Type, actor.Job, out var data))
                     {
                         Glamourer.Log.Verbose(
                             $"Changing Offhand from {state.ModelData.Weapon(EquipSlot.OffHand)} | {state.BaseData.Weapon(EquipSlot.OffHand)} to {data.Item1} for 0x{actor.Address:X}.");
@@ -203,7 +204,7 @@ public sealed class AutoDesignApplier : IDisposable
             return;
         }
 
-        if (!_state.TryGetValue(id, out var state))
+        if (!_state.GetOrCreate(actor, out var state))
             return;
 
         if (oldJob.Id == newJob.Id && state.LastJob == newJob.Id)
@@ -215,7 +216,7 @@ public sealed class AutoDesignApplier : IDisposable
         _state.ReapplyState(actor, StateSource.Fixed);
     }
 
-    public void ReapplyAutomation(Actor actor, ActorIdentifier identifier, ActorState state)
+    public void ReapplyAutomation(Actor actor, ActorIdentifier identifier, ActorState state, bool reset)
     {
         if (!_config.EnableAutoDesigns)
             return;
@@ -223,7 +224,8 @@ public sealed class AutoDesignApplier : IDisposable
         if (!GetPlayerSet(identifier, out var set))
             return;
 
-        _state.ResetState(state, StateSource.Game);
+        if (reset)
+            _state.ResetState(state, StateSource.Game);
         Reduce(actor, state, set, false, false);
     }
 
@@ -277,7 +279,7 @@ public sealed class AutoDesignApplier : IDisposable
             return;
 
         var mergedDesign = _designMerger.Merge(
-            set.Designs.Where(d => d.IsActive(actor)).SelectMany(d => d.Design.AllLinks.Select(l => (l.Design, l.Flags & d.Type))),
+            set.Designs.Where(d => d.IsActive(actor)).SelectMany(d => d.Design.AllLinks.Select(l => (l.Design, l.Flags & d.Type, d.Jobs.Flags))),
             state.ModelData.Customize, state.BaseData, true, _config.AlwaysApplyAssociatedMods);
         _state.ApplyDesign(state, mergedDesign, new ApplySettings(0, StateSource.Fixed, respectManual, fromJobChange, false, false, false));
     }
